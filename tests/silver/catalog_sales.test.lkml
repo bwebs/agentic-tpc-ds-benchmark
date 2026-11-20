@@ -142,3 +142,44 @@ test: catalog_sales_feb_mar_2001_children_join_metrics {
     expression: ${catalog_sales.count} = 1211 ;;
   }
 }
+
+
+test: catalog_sales_2000_promo_demographics_metrics {
+  explore_source: catalog_sales {
+    column: average_quantity { field: catalog_sales.average_quantity }
+    column: average_list_price { field: catalog_sales.average_list_price }
+    column: average_coupon_amount { field: catalog_sales.average_coupon_amount }
+    column: average_sales_price { field: catalog_sales.average_sales_price }
+    column: count { field: catalog_sales.count }
+    filters: [
+      date_dim.d_year_num: "2000",
+      cd1.cd_gender: "F",
+      cd1.cd_marital_status: "W",
+      cd1.cd_education_status: "Secondary",
+      promotion.is_non_email_or_non_event_channel: "Yes",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_bill_cdemo_sk: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      catalog_sales.cs_promo_sk: "NOT NULL",
+      promotion.p_promo_sk: "NOT NULL"
+    ]
+  }
+  assert: average_quantity_matches {
+    expression: round(${catalog_sales.average_quantity}, 2) = 50.32 ;;
+  }
+  assert: average_list_price_matches {
+    expression: round(${catalog_sales.average_list_price}, 2) = 100.51 ;;
+  }
+  assert: average_coupon_amount_matches {
+    expression: round(${catalog_sales.average_coupon_amount}, 2) = 252.88 ;;
+  }
+  assert: average_sales_price_matches {
+    expression: round(${catalog_sales.average_sales_price}, 2) = 50.93 ;;
+  }
+  assert: count_matches {
+    expression: ${catalog_sales.count} = 3990 ;;
+  }
+}

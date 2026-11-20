@@ -11,6 +11,8 @@ include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
 include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
+include: "/bronze/promotion.view.lkml"
+include: "/bronze/promotion.refinement.lkml"
 include: "/silver/catalog_order_return_facts.view.lkml"
 include: "/silver/catalog_order_warehouse_facts.view.lkml"
 include: "/silver/catalog_sales_customer_address_fields.view.lkml"
@@ -98,6 +100,40 @@ explore: catalog_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${customer.c_current_cdemo_sk} = ${cd2.cd_demo_sk} ;;
+  }
+
+  join: promotion {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_promo_sk} = ${promotion.p_promo_sk} ;;
+  }
+
+  query: promotional_item_averages_2000_demographic_cohort {
+    description: "2000 catalog sales average quantity, list price, coupon amount, and sales price by item ID for widowed female secondary-educated bill demographics on non-email or non-event promotions"
+    dimensions: [item.i_item_id]
+    measures: [
+      catalog_sales.average_quantity,
+      catalog_sales.average_list_price,
+      catalog_sales.average_coupon_amount,
+      catalog_sales.average_sales_price
+    ]
+    filters: [
+      date_dim.d_year_num: "2000",
+      cd1.cd_gender: "F",
+      cd1.cd_marital_status: "W",
+      cd1.cd_education_status: "Secondary",
+      promotion.is_non_email_or_non_event_channel: "Yes",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_bill_cdemo_sk: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      catalog_sales.cs_promo_sk: "NOT NULL",
+      promotion.p_promo_sk: "NOT NULL"
+    ]
+    sorts: [item.i_item_id: asc]
+    limit: 100
   }
 
   query: female_secondary_ed_2001_averages_by_item_and_county {
