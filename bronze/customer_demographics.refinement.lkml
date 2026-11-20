@@ -8,6 +8,13 @@ view: +customer_demographics {
     sql: ${TABLE}.cd_demo_sk ;;
   }
 
+  dimension: marital_education_group_id {
+    type: string
+    label: "Marital & Education Group ID"
+    description: "Combined marital status and education status grain key (CONCAT(cd_marital_status, ': ', cd_education_status))."
+    sql: CONCAT(${cd_marital_status}, ': ', ${cd_education_status}) ;;
+  }
+
   measure: count {
     description: "Count of customer demographic profiles."
   }
