@@ -105,4 +105,36 @@ explore: store_return_catalog_repurchase {
     ]
     limit: 100
   }
+
+  query: apr_2001_store_return_catalog_max_profit_loss {
+    description: "Maximum store sales profit, store returns loss, and catalog sales profit by item and store for April 2001 store sales returned and repurchased in April-October 2001"
+    dimensions: [
+      item.i_item_id,
+      item.i_item_desc,
+      store.s_store_id,
+      store.s_store_name
+    ]
+    measures: [
+      store_return_catalog_repurchase.max_store_sales_profit,
+      store_return_catalog_repurchase.max_store_returns_loss,
+      store_return_catalog_repurchase.max_catalog_sales_profit
+    ]
+    filters: [
+      d1.d_moy: "4",
+      d1.d_year_num: "2001",
+      d2.d_moy: "[4, 10]",
+      d2.d_year_num: "2001",
+      d3.d_moy: "[4, 10]",
+      d3.d_year_num: "2001",
+      store.s_store_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      item.i_item_id: asc,
+      item.i_item_desc: asc,
+      store.s_store_id: asc,
+      store.s_store_name: asc
+    ]
+    limit: 100
+  }
 }

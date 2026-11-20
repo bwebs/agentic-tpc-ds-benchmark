@@ -50,3 +50,30 @@ test: store_return_catalog_repurchase_2000_dispersion_metrics {
       AND round(${store_return_catalog_repurchase.cov_catalog_sales_quantity}, 4) = 0.5577 ;;
   }
 }
+
+test: store_return_catalog_repurchase_2000_max_profit_loss {
+  explore_source: store_return_catalog_repurchase {
+    column: count { field: store_return_catalog_repurchase.count }
+    column: max_store_sales_profit { field: store_return_catalog_repurchase.max_store_sales_profit }
+    column: max_store_returns_loss { field: store_return_catalog_repurchase.max_store_returns_loss }
+    column: max_catalog_sales_profit { field: store_return_catalog_repurchase.max_catalog_sales_profit }
+    filters: {
+      field: d1.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: max_profit_loss_matches {
+    expression: ${store_return_catalog_repurchase.count} = 42
+      AND round(${store_return_catalog_repurchase.max_store_sales_profit}, 2) = 3263
+      AND round(${store_return_catalog_repurchase.max_store_returns_loss}, 2) = 2534.26
+      AND round(${store_return_catalog_repurchase.max_catalog_sales_profit}, 2) = 6962 ;;
+  }
+}

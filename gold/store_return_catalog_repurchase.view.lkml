@@ -15,11 +15,14 @@ view: store_return_catalog_repurchase {
         {{ _sdt_ss.ss_store_sk._sql }} AS ss_store_sk,
         {{ _sdt_ss.ss_sold_date_sk._sql }} AS ss_sold_date_sk,
         {{ _sdt_ss.ss_quantity._sql }} AS ss_quantity,
+        {{ _sdt_ss.ss_net_profit._sql }} AS ss_net_profit,
         {{ _sdt_sr.sr_returned_date_sk._sql }} AS sr_returned_date_sk,
         {{ _sdt_sr.sr_return_quantity._sql }} AS sr_return_quantity,
+        {{ _sdt_sr.sr_net_loss._sql }} AS sr_net_loss,
         {{ _sdt_cs.cs_order_number._sql }} AS cs_order_number,
         {{ _sdt_cs.cs_sold_date_sk._sql }} AS cs_sold_date_sk,
-        {{ _sdt_cs.cs_quantity._sql }} AS cs_quantity
+        {{ _sdt_cs.cs_quantity._sql }} AS cs_quantity,
+        {{ _sdt_cs.cs_net_profit._sql }} AS cs_net_profit
       FROM ${store_sales.SQL_TABLE_NAME} AS {{ _sdt_ss._name }}
       INNER JOIN ${store_returns.SQL_TABLE_NAME} AS {{ _sdt_sr._name }}
         ON {{ _sdt_ss.ss_customer_sk._sql }} = {{ _sdt_sr.sr_customer_sk._sql }}
@@ -107,6 +110,27 @@ view: store_return_catalog_repurchase {
     type: number
     description: "Subsequent catalog sales order quantity on matched return-and-catalog-repurchase pairs."
     sql: ${TABLE}.cs_quantity ;;
+  }
+
+  dimension: ss_net_profit {
+    type: number
+    value_format_name: usd
+    description: "Store sales net profit on matched return-and-catalog-repurchase pairs."
+    sql: ${TABLE}.ss_net_profit ;;
+  }
+
+  dimension: sr_net_loss {
+    type: number
+    value_format_name: usd
+    description: "Store return net loss on matched return-and-catalog-repurchase pairs."
+    sql: ${TABLE}.sr_net_loss ;;
+  }
+
+  dimension: cs_net_profit {
+    type: number
+    value_format_name: usd
+    description: "Subsequent catalog sales net profit on matched return-and-catalog-repurchase pairs."
+    sql: ${TABLE}.cs_net_profit ;;
   }
 
   measure: count {
@@ -252,5 +276,33 @@ view: store_return_catalog_repurchase {
     tags: ["non_additive"]
     description: "Coefficient of variation of catalog sales quantity (STDDEV_SAMP(cs_quantity) / AVG(cs_quantity))."
     synonyms: ["catalog_sales_quantitycov", "catalog_sales_quantitystdev"]
+  }
+
+  # --- Max Profit and Loss Metrics (Query 25) ---
+  measure: max_store_sales_profit {
+    type: max
+    sql: ${ss_net_profit} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Maximum store sales net profit across matched pairs (MAX(ss_net_profit))."
+    synonyms: ["store_sales_profit"]
+  }
+
+  measure: max_store_returns_loss {
+    type: max
+    sql: ${sr_net_loss} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Maximum store returns net loss across matched pairs (MAX(sr_net_loss))."
+    synonyms: ["store_returns_loss"]
+  }
+
+  measure: max_catalog_sales_profit {
+    type: max
+    sql: ${cs_net_profit} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Maximum catalog sales net profit across matched pairs (MAX(cs_net_profit))."
+    synonyms: ["catalog_sales_profit"]
   }
 }
