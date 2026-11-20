@@ -557,4 +557,25 @@ explore: store_sales {
     ]
     limit: 100
   }
+
+  query: nov_1999_brand_sales_manager_1 {
+    description: "November 1999 store sales extended sales price by year and brand for manager 1 items"
+    dimensions: [date_dim.d_year_num, item.i_brand_id, item.i_brand]
+    measures: [store_sales.total_ext_sales_price]
+    filters: [
+      item.i_manager_id: "1",
+      date_dim.d_moy: "11",
+      date_dim.d_year_num: "1999",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      date_dim.d_year_num: asc,
+      store_sales.total_ext_sales_price: desc,
+      item.i_brand_id: asc
+    ]
+    limit: 100
+  }
 }
