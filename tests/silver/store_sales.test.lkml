@@ -517,3 +517,80 @@ test: store_sales_jan_2002_gmt_minus_5_dow_sales_metrics {
     expression: ${store_sales.count} = 32412 ;;
   }
 }
+
+test: store_sales_2000_weekend_midway_fairview_address_join_metrics {
+  explore_source: store_sales {
+    column: total_coupon_amt { field: store_sales.total_coupon_amt }
+    column: total_net_profit { field: store_sales.total_net_profit }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store.s_city
+      value: "Midway,Fairview"
+    }
+    filters: {
+      field: date_dim.d_dow
+      value: "0, 6"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_hdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: household_demographics.hd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: sales_customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_current_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_coupon_amt_matches {
+    expression: round(${store_sales.total_coupon_amt}, 2) = 29995097.04 ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${store_sales.total_net_profit}, 2) = -129155554.65 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 156841 ;;
+  }
+}

@@ -264,3 +264,20 @@ test: store_sales_date_2451545_gross_margin {
     expression: ${store_sales.count} = 2743 ;;
   }
 }
+
+test: store_sales_date_sk_2451911_coupon_amt_metrics {
+  explore_source: store_sales {
+    column: total_coupon_amt { field: store_sales.total_coupon_amt }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451911"
+    }
+  }
+  assert: total_coupon_amt_matches {
+    expression: round(${store_sales.total_coupon_amt}, 2) = 577179.83 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 3142 ;;
+  }
+}
