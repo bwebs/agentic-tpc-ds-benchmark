@@ -24,6 +24,13 @@ view: +household_demographics {
     description: "Household dependent count."
   }
 
+  dimension: is_dep_to_vehicle_ratio_over_1_2 {
+    type: yesno
+    label: "Dependent-to-Vehicle Ratio Over 1.2"
+    description: "True when household vehicle count > 0 and dependent-to-vehicle ratio (hd_dep_count / hd_vehicle_count) exceeds 1.2."
+    sql: ${hd_vehicle_count} > 0 AND ${hd_dep_count} > 1.2 * ${hd_vehicle_count} ;;
+  }
+
   measure: count {
     description: "Count of household demographic records."
   }
