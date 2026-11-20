@@ -101,4 +101,184 @@ view: +store_sales {
     tags: ["non_additive"]
     description: "Average sales price per store sales line item (AVG(ss_sales_price))."
   }
+
+  measure: qty_1_20_count {
+    type: count
+    filters: [ss_quantity: "[1, 20]"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Count of store sales line items with quantity between 1 and 20."
+  }
+
+  measure: qty_1_20_avg_ext_list_price {
+    type: average
+    sql: ${ss_ext_list_price} ;;
+    filters: [ss_quantity: "[1, 20]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average extended list price for store sales line items with quantity between 1 and 20."
+  }
+
+  measure: qty_1_20_avg_net_profit {
+    type: average
+    sql: ${ss_net_profit} ;;
+    filters: [ss_quantity: "[1, 20]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average net profit for store sales line items with quantity between 1 and 20."
+  }
+
+  measure: bucket1 {
+    type: number
+    sql: CASE WHEN ${qty_1_20_count} > 3672 THEN ${qty_1_20_avg_ext_list_price} ELSE ${qty_1_20_avg_net_profit} END ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Conditional metric for quantity 1-20: average extended list price when count > 3,672, else average net profit."
+  }
+
+  measure: qty_21_40_count {
+    type: count
+    filters: [ss_quantity: "[21, 40]"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Count of store sales line items with quantity between 21 and 40."
+  }
+
+  measure: qty_21_40_avg_ext_list_price {
+    type: average
+    sql: ${ss_ext_list_price} ;;
+    filters: [ss_quantity: "[21, 40]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average extended list price for store sales line items with quantity between 21 and 40."
+  }
+
+  measure: qty_21_40_avg_net_profit {
+    type: average
+    sql: ${ss_net_profit} ;;
+    filters: [ss_quantity: "[21, 40]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average net profit for store sales line items with quantity between 21 and 40."
+  }
+
+  measure: bucket2 {
+    type: number
+    sql: CASE WHEN ${qty_21_40_count} > 3392 THEN ${qty_21_40_avg_ext_list_price} ELSE ${qty_21_40_avg_net_profit} END ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Conditional metric for quantity 21-40: average extended list price when count > 3,392, else average net profit."
+  }
+
+  measure: qty_41_60_count {
+    type: count
+    filters: [ss_quantity: "[41, 60]"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Count of store sales line items with quantity between 41 and 60."
+  }
+
+  measure: qty_41_60_avg_ext_list_price {
+    type: average
+    sql: ${ss_ext_list_price} ;;
+    filters: [ss_quantity: "[41, 60]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average extended list price for store sales line items with quantity between 41 and 60."
+  }
+
+  measure: qty_41_60_avg_net_profit {
+    type: average
+    sql: ${ss_net_profit} ;;
+    filters: [ss_quantity: "[41, 60]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average net profit for store sales line items with quantity between 41 and 60."
+  }
+
+  measure: bucket3 {
+    type: number
+    sql: CASE WHEN ${qty_41_60_count} > 32784 THEN ${qty_41_60_avg_ext_list_price} ELSE ${qty_41_60_avg_net_profit} END ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Conditional metric for quantity 41-60: average extended list price when count > 32,784, else average net profit."
+  }
+
+  measure: qty_61_80_count {
+    type: count
+    filters: [ss_quantity: "[61, 80]"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Count of store sales line items with quantity between 61 and 80."
+  }
+
+  measure: qty_61_80_avg_ext_list_price {
+    type: average
+    sql: ${ss_ext_list_price} ;;
+    filters: [ss_quantity: "[61, 80]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average extended list price for store sales line items with quantity between 61 and 80."
+  }
+
+  measure: qty_61_80_avg_net_profit {
+    type: average
+    sql: ${ss_net_profit} ;;
+    filters: [ss_quantity: "[61, 80]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average net profit for store sales line items with quantity between 61 and 80."
+  }
+
+  measure: bucket4 {
+    type: number
+    sql: CASE WHEN ${qty_61_80_count} > 26032 THEN ${qty_61_80_avg_ext_list_price} ELSE ${qty_61_80_avg_net_profit} END ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Conditional metric for quantity 61-80: average extended list price when count > 26,032, else average net profit."
+  }
+
+  measure: qty_81_100_count {
+    type: count
+    filters: [ss_quantity: "[81, 100]"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Count of store sales line items with quantity between 81 and 100."
+  }
+
+  measure: qty_81_100_avg_ext_list_price {
+    type: average
+    sql: ${ss_ext_list_price} ;;
+    filters: [ss_quantity: "[81, 100]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average extended list price for store sales line items with quantity between 81 and 100."
+  }
+
+  measure: qty_81_100_avg_net_profit {
+    type: average
+    sql: ${ss_net_profit} ;;
+    filters: [ss_quantity: "[81, 100]"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Average net profit for store sales line items with quantity between 81 and 100."
+  }
+
+  measure: bucket5 {
+    type: number
+    sql: CASE WHEN ${qty_81_100_count} > 23982 THEN ${qty_81_100_avg_ext_list_price} ELSE ${qty_81_100_avg_net_profit} END ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Bucket Metrics"
+    description: "Conditional metric for quantity 81-100: average extended list price when count > 23,982, else average net profit."
+  }
 }
