@@ -1,6 +1,7 @@
 include: "/bronze/explores/customer_base.explore.lkml"
 include: "/silver/customer_channel_yoy_facts.view.lkml"
 include: "/silver/customer_2002_apr_jul_channel_flags.view.lkml"
+include: "/silver/customer_2001_q1_q3_channel_flags.view.lkml"
 include: "/bronze/store_sales.view.lkml"
 include: "/bronze/store_sales.refinement.lkml"
 include: "/bronze/catalog_sales.view.lkml"
@@ -50,6 +51,12 @@ explore: customer {
     sql_on: ${customer.c_customer_sk} = ${customer_2002_apr_jul_channel_flags.customer_sk} ;;
   }
 
+  join: customer_2001_q1_q3_channel_flags {
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${customer.c_customer_sk} = ${customer_2001_q1_q3_channel_flags.customer_sk} ;;
+  }
+
   join: _sdt_store_sales {
     from: store_sales
     sql: ;;
@@ -76,6 +83,47 @@ explore: customer {
     sql: ;;
     relationship: one_to_one
     fields: []
+  }
+
+  query: state_demographics_by_2001_q1_q3_multichannel_activity {
+    description: "2001 Q1-Q3 store plus web or catalog-ship active customers by state and dependent demographics"
+    dimensions: [
+      customer_address.ca_state,
+      customer_demographics.cd_gender,
+      customer_demographics.cd_marital_status,
+      customer_demographics.cd_dep_count,
+      customer_demographics.cd_dep_employed_count,
+      customer_demographics.cd_dep_college_count
+    ]
+    measures: [
+      customer.count,
+      customer_demographics.stddev_dependent_count,
+      customer_demographics.average_dependent_count,
+      customer_demographics.max_dependent_count,
+      customer_demographics.stddev_employed_dependent_count,
+      customer_demographics.average_employed_dependent_count,
+      customer_demographics.max_employed_dependent_count,
+      customer_demographics.stddev_college_dependent_count,
+      customer_demographics.average_college_dependent_count,
+      customer_demographics.max_college_dependent_count
+    ]
+    filters: [
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL",
+      customer.c_current_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL",
+      customer_2001_q1_q3_channel_flags.has_store_sales: "Yes",
+      customer_2001_q1_q3_channel_flags.has_web_or_catalog_ship_sales: "Yes"
+    ]
+    sorts: [
+      customer_address.ca_state: asc,
+      customer_demographics.cd_gender: asc,
+      customer_demographics.cd_marital_status: asc,
+      customer_demographics.cd_dep_count: asc,
+      customer_demographics.cd_dep_employed_count: asc,
+      customer_demographics.cd_dep_college_count: asc
+    ]
+    limit: 100
   }
 
   query: demographics_by_2002_apr_jul_multichannel_activity {
