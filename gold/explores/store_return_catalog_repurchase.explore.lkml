@@ -137,4 +137,35 @@ explore: store_return_catalog_repurchase {
     ]
     limit: 100
   }
+
+  query: apr_1998_store_return_catalog_average_quantity {
+    description: "Average store sales quantity, store returns quantity, and catalog sales quantity by item and store for April 1998 store sales returned in April-July 1998 and repurchased in 1998-2000"
+    dimensions: [
+      item.i_item_id,
+      item.i_item_desc,
+      store.s_store_id,
+      store.s_store_name
+    ]
+    measures: [
+      store_return_catalog_repurchase.average_store_sales_quantity,
+      store_return_catalog_repurchase.average_store_returns_quantity,
+      store_return_catalog_repurchase.average_catalog_sales_quantity
+    ]
+    filters: [
+      d1.d_moy: "4",
+      d1.d_year_num: "1998",
+      d2.d_moy: "[4, 7]",
+      d2.d_year_num: "1998",
+      d3.d_year_num: "1998,1999,2000",
+      store.s_store_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      item.i_item_id: asc,
+      item.i_item_desc: asc,
+      store.s_store_id: asc,
+      store.s_store_name: asc
+    ]
+    limit: 100
+  }
 }
