@@ -316,3 +316,21 @@ test: store_sales_date_2451911_total_sales_price {
     expression: ${store_sales.count} = 3142 ;;
   }
 }
+
+
+test: store_sales_date_2451911_sales_price_x_quantity {
+  explore_source: store_sales {
+    column: total_sales_price_x_quantity { field: store_sales.total_sales_price_x_quantity }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451911"
+    }
+  }
+  assert: total_sales_price_x_quantity_matches {
+    expression: round(${store_sales.total_sales_price_x_quantity}, 2) = 5781823.95 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 3142 ;;
+  }
+}

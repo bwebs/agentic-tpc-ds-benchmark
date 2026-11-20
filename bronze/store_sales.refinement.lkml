@@ -97,6 +97,14 @@ view: +store_sales {
     synonyms: ["sum_sales", "sales price"]
   }
 
+  measure: total_sales_price_x_quantity {
+    type: sum
+    sql: COALESCE(${ss_sales_price} * ${ss_quantity}, 0) ;;
+    value_format_name: usd
+    description: "Sum of sales price times quantity across store sales line items (SUM(COALESCE(ss_sales_price * ss_quantity, 0)))."
+    synonyms: ["sumsales"]
+  }
+
   measure: total_ext_sales_price {
     type: sum
     sql: ${ss_ext_sales_price} ;;
