@@ -165,4 +165,19 @@ view: +catalog_sales {
     tags: ["non_additive"]
     description: "Average net profit per catalog sales line item (AVG(cs_net_profit))."
   }
+
+  measure: total_ext_discount_amt {
+    type: sum
+    sql: ${cs_ext_discount_amt} ;;
+    value_format_name: usd
+    description: "Sum of extended catalog discount amount (cs_ext_discount_amt)."
+  }
+
+  measure: average_ext_discount_amt {
+    type: average
+    sql: ${cs_ext_discount_amt} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Average extended catalog discount amount per catalog sales line item (AVG(cs_ext_discount_amt))."
+  }
 }
