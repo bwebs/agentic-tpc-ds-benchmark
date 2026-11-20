@@ -120,6 +120,14 @@ view: +store_sales {
     synonyms: ["net profit"]
   }
 
+  measure: gross_margin {
+    type: number
+    sql: ${total_net_profit} / NULLIF(${total_ext_sales_price}, 0) ;;
+    value_format_name: decimal_4
+    tags: ["non_additive"]
+    description: "Store sales gross margin ratio (SUM(ss_net_profit) / SUM(ss_ext_sales_price))."
+  }
+
   measure: total_extended_discount_amount {
     type: sum
     sql: ${ss_ext_discount_amt} ;;
