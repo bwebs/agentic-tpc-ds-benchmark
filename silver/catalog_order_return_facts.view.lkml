@@ -1,4 +1,4 @@
-include: "/bronze/explores/catalog_returns.explore.lkml"
+include: "/silver/explores/catalog_returns.explore.lkml"
 
 view: catalog_order_return_facts {
   derived_table: {
