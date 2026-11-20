@@ -161,3 +161,84 @@ test: store_sales_date_2451149_ext_sales_price {
     expression: ${store_sales.count} = 2849 ;;
   }
 }
+
+test: store_sales_jan_1999_quantity_price_buckets {
+  explore_source: store_sales {
+    column: b1_lp { field: store_sales.b1_lp }
+    column: b1_cnt { field: store_sales.b1_cnt }
+    column: b1_cntd { field: store_sales.b1_cntd }
+    column: b2_lp { field: store_sales.b2_lp }
+    column: b2_cnt { field: store_sales.b2_cnt }
+    column: b2_cntd { field: store_sales.b2_cntd }
+    column: b3_lp { field: store_sales.b3_lp }
+    column: b3_cnt { field: store_sales.b3_cnt }
+    column: b3_cntd { field: store_sales.b3_cntd }
+    column: b4_lp { field: store_sales.b4_lp }
+    column: b4_cnt { field: store_sales.b4_cnt }
+    column: b4_cntd { field: store_sales.b4_cntd }
+    column: b5_lp { field: store_sales.b5_lp }
+    column: b5_cnt { field: store_sales.b5_cnt }
+    column: b5_cntd { field: store_sales.b5_cntd }
+    column: b6_lp { field: store_sales.b6_lp }
+    column: b6_cnt { field: store_sales.b6_cnt }
+    column: b6_cntd { field: store_sales.b6_cntd }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "[2451180, 2451210]"
+    }
+  }
+  assert: b1_lp_matches {
+    expression: round(${store_sales.b1_lp}, 2) = 55.05 ;;
+  }
+  assert: b1_cnt_matches {
+    expression: ${store_sales.b1_cnt} = 411 ;;
+  }
+  assert: b1_cntd_matches {
+    expression: ${store_sales.b1_cntd} = 399 ;;
+  }
+  assert: b2_lp_matches {
+    expression: round(${store_sales.b2_lp}, 2) = 74.93 ;;
+  }
+  assert: b2_cnt_matches {
+    expression: ${store_sales.b2_cnt} = 577 ;;
+  }
+  assert: b2_cntd_matches {
+    expression: ${store_sales.b2_cntd} = 557 ;;
+  }
+  assert: b3_lp_matches {
+    expression: round(${store_sales.b3_lp}, 2) = 56.13 ;;
+  }
+  assert: b3_cnt_matches {
+    expression: ${store_sales.b3_cnt} = 393 ;;
+  }
+  assert: b3_cntd_matches {
+    expression: ${store_sales.b3_cntd} = 378 ;;
+  }
+  assert: b4_lp_matches {
+    expression: round(${store_sales.b4_lp}, 2) = 47.44 ;;
+  }
+  assert: b4_cnt_matches {
+    expression: ${store_sales.b4_cnt} = 401 ;;
+  }
+  assert: b4_cntd_matches {
+    expression: ${store_sales.b4_cntd} = 388 ;;
+  }
+  assert: b5_lp_matches {
+    expression: round(${store_sales.b5_lp}, 2) = 37.26 ;;
+  }
+  assert: b5_cnt_matches {
+    expression: ${store_sales.b5_cnt} = 468 ;;
+  }
+  assert: b5_cntd_matches {
+    expression: ${store_sales.b5_cntd} = 448 ;;
+  }
+  assert: b6_lp_matches {
+    expression: round(${store_sales.b6_lp}, 2) = 84.11 ;;
+  }
+  assert: b6_cnt_matches {
+    expression: ${store_sales.b6_cnt} = 301 ;;
+  }
+  assert: b6_cntd_matches {
+    expression: ${store_sales.b6_cntd} = 295 ;;
+  }
+}
