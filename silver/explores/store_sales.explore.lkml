@@ -20,6 +20,7 @@ include: "/silver/item_item_category_price_facts_fields.view.lkml"
 include: "/silver/customer_demographics_household_demographics_store_sales_fields.view.lkml"
 include: "/silver/sales_customer_address_store_sales_fields.view.lkml"
 include: "/silver/customer_address_store_fields.view.lkml"
+include: "/silver/date_dim_store_sales_fields.view.lkml"
 
 explore: store_sales {
   extends: [store_sales_base]
@@ -107,6 +108,45 @@ explore: store_sales {
   join: customer_address_store_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: date_dim_store_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: store_day_of_week_sales_2002_gmt_minus_5 {
+    description: "2002 store sales price by day of week (Sunday through Saturday) by store name and store ID for GMT -5 stores"
+    dimensions: [store.s_store_name, store.s_store_id]
+    measures: [
+      date_dim_store_sales_fields.sun_sales,
+      date_dim_store_sales_fields.mon_sales,
+      date_dim_store_sales_fields.tue_sales,
+      date_dim_store_sales_fields.wed_sales,
+      date_dim_store_sales_fields.thu_sales,
+      date_dim_store_sales_fields.fri_sales,
+      date_dim_store_sales_fields.sat_sales
+    ]
+    filters: [
+      store.s_gmt_offset: "-5",
+      date_dim.d_year_num: "2002",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL"
+    ]
+    sorts: [
+      store.s_store_name: asc,
+      store.s_store_id: asc,
+      date_dim_store_sales_fields.sun_sales: asc,
+      date_dim_store_sales_fields.mon_sales: asc,
+      date_dim_store_sales_fields.tue_sales: asc,
+      date_dim_store_sales_fields.wed_sales: asc,
+      date_dim_store_sales_fields.thu_sales: asc,
+      date_dim_store_sales_fields.fri_sales: asc,
+      date_dim_store_sales_fields.sat_sales: asc
+    ]
+    limit: 100
   }
 
   query: dec_2000_category_ext_sales_manager_1 {

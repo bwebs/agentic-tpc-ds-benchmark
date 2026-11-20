@@ -452,3 +452,68 @@ test: store_sales_dec_2000_manager_1_join_metrics {
     expression: ${store_sales.count} = 1579 ;;
   }
 }
+
+test: store_sales_jan_2002_gmt_minus_5_dow_sales_metrics {
+  explore_source: store_sales {
+    column: sun_sales { field: date_dim_store_sales_fields.sun_sales }
+    column: mon_sales { field: date_dim_store_sales_fields.mon_sales }
+    column: tue_sales { field: date_dim_store_sales_fields.tue_sales }
+    column: wed_sales { field: date_dim_store_sales_fields.wed_sales }
+    column: thu_sales { field: date_dim_store_sales_fields.thu_sales }
+    column: fri_sales { field: date_dim_store_sales_fields.fri_sales }
+    column: sat_sales { field: date_dim_store_sales_fields.sat_sales }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store.s_gmt_offset
+      value: "-5"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2002"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "1"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: sun_sales_matches {
+    expression: round(${date_dim_store_sales_fields.sun_sales}, 2) = 120839.86 ;;
+  }
+  assert: mon_sales_matches {
+    expression: round(${date_dim_store_sales_fields.mon_sales}, 2) = 126240.76 ;;
+  }
+  assert: tue_sales_matches {
+    expression: round(${date_dim_store_sales_fields.tue_sales}, 2) = 265947.00 ;;
+  }
+  assert: wed_sales_matches {
+    expression: round(${date_dim_store_sales_fields.wed_sales}, 2) = 274714.09 ;;
+  }
+  assert: thu_sales_matches {
+    expression: round(${date_dim_store_sales_fields.thu_sales}, 2) = 166388.35 ;;
+  }
+  assert: fri_sales_matches {
+    expression: round(${date_dim_store_sales_fields.fri_sales}, 2) = 136739.38 ;;
+  }
+  assert: sat_sales_matches {
+    expression: round(${date_dim_store_sales_fields.sat_sales}, 2) = 125172.19 ;;
+  }
+  assert: count_matches {
+    expression: ${store_sales.count} = 32412 ;;
+  }
+}
