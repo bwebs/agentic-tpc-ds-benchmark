@@ -20,6 +20,13 @@ view: +customer {
     sql: ${TABLE}.c_current_addr_sk ;;
   }
 
+  dimension: c_current_cdemo_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.c_current_cdemo_sk ;;
+  }
+
   dimension: is_preferred_customer {
     type: yesno
     label: "Preferred Customer"
