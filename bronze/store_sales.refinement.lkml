@@ -22,6 +22,13 @@ view: +store_sales {
     sql: ${TABLE}.ss_item_sk ;;
   }
 
+  dimension: ss_customer_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ss_customer_sk ;;
+  }
+
   measure: count {
     description: "Count of store sales line items."
   }

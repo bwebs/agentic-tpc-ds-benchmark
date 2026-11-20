@@ -34,4 +34,12 @@ view: +item {
   measure: count {
     description: "Count of items."
   }
+
+  measure: average_current_price {
+    type: average
+    sql: ${i_current_price} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Average current retail price across items (i_current_price)."
+  }
 }
