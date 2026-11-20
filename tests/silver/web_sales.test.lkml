@@ -107,3 +107,54 @@ test: web_sales_month_seq_1222_1233_ship_aging_joins {
     expression: index(${ship_mode.sm_type}, 1) = "EXPRESS" AND index(${web_site.web_name}, 1) = "site_0" AND index(${web_sales.days_30}, 1) = 286 AND index(${web_sales.days_31_60}, 1) = 307 AND index(${web_sales.days_61_90}, 1) = 314 AND index(${web_sales.days_91_120}, 1) = 289 AND index(${web_sales.days_over_120}, 1) = 0 ;;
   }
 }
+
+test: web_sales_2001_web_returns_reason_demographics_joins {
+  explore_source: web_sales {
+    column: r_reason_desc_20 { field: reason.r_reason_desc_20 }
+    column: average_quantity { field: web_sales.average_quantity }
+    column: average_refunded_cash { field: web_returns.average_refunded_cash }
+    column: average_fee { field: web_returns.average_fee }
+    column: count { field: web_sales.count }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2001"
+    }
+    filters: {
+      field: refunded_address.ca_country
+      value: "United States"
+    }
+    filters: {
+      field: web_page.wp_web_page_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: web_returns.wr_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: cd1.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: cd2.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: refunded_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: reason.r_reason_sk
+      value: "NOT NULL"
+    }
+    sorts: [reason.r_reason_desc_20: asc]
+    limit: 5
+  }
+  assert: first_row_reason_returns_matches {
+    expression: index(${reason.r_reason_desc_20}, 1) = "Did not fit" AND round(index(${web_sales.average_quantity}, 1), 2) = 51.76 AND round(index(${web_returns.average_refunded_cash}, 1), 2) = 667.13 AND round(index(${web_returns.average_fee}, 1), 2) = 50.72 AND index(${web_sales.count}, 1) = 385 ;;
+  }
+}

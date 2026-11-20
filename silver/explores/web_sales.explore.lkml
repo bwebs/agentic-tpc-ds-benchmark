@@ -13,6 +13,14 @@ include: "/bronze/ship_mode.view.lkml"
 include: "/bronze/ship_mode.refinement.lkml"
 include: "/bronze/web_site.view.lkml"
 include: "/bronze/web_site.refinement.lkml"
+include: "/bronze/web_returns.view.lkml"
+include: "/bronze/web_returns.refinement.lkml"
+include: "/bronze/web_page.view.lkml"
+include: "/bronze/web_page.refinement.lkml"
+include: "/bronze/customer_demographics.view.lkml"
+include: "/bronze/customer_demographics.refinement.lkml"
+include: "/bronze/reason.view.lkml"
+include: "/bronze/reason.refinement.lkml"
 include: "/silver/prime_sk_item_ids.view.lkml"
 
 explore: web_sales {
@@ -74,6 +82,82 @@ explore: web_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${web_sales.ws_web_site_sk} = ${web_site.web_site_sk} ;;
+  }
+
+  join: web_returns {
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${web_sales.ws_item_sk} = ${web_returns.wr_item_sk}
+      AND ${web_sales.ws_order_number} = ${web_returns.wr_order_number} ;;
+  }
+
+  join: web_page {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_web_page_sk} = ${web_page.wp_web_page_sk} ;;
+  }
+
+  join: cd1 {
+    from: customer_demographics
+    view_label: "Refunded Customer Demographics"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_returns.wr_refunded_cdemo_sk} = ${cd1.cd_demo_sk} ;;
+  }
+
+  join: cd2 {
+    from: customer_demographics
+    view_label: "Returning Customer Demographics"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_returns.wr_returning_cdemo_sk} = ${cd2.cd_demo_sk} ;;
+  }
+
+  join: refunded_address {
+    from: customer_address
+    view_label: "Refunded Customer Address"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_returns.wr_refunded_addr_sk} = ${refunded_address.ca_address_sk} ;;
+  }
+
+  join: reason {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_returns.wr_reason_sk} = ${reason.r_reason_sk} ;;
+  }
+
+  query: web_returns_2001_averages_by_reason {
+    description: "2001 average web sales quantity, refunded cash, and return fee by return reason across US state and matching refunded/returning demographic tiers."
+    dimensions: [reason.r_reason_desc_20]
+    measures: [
+      web_sales.average_quantity,
+      web_returns.average_refunded_cash,
+      web_returns.average_fee
+    ]
+    filters: [
+      date_dim.d_year_num: "2001",
+      refunded_address.ca_country: "United States",
+      refunded_address.ca_state: "KY, ME, IL, OK, NE, MN, FL, WI, KS",
+      cd1.cd_marital_status: "W, D, M",
+      cd1.cd_education_status: "Primary, Secondary, Advanced Degree",
+      web_sales.ws_sales_price: "[50, 200]",
+      web_sales.ws_net_profit: "[50, 300]",
+      web_page.wp_web_page_sk: "NOT NULL",
+      web_returns.wr_item_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      cd2.cd_demo_sk: "NOT NULL",
+      refunded_address.ca_address_sk: "NOT NULL",
+      reason.r_reason_sk: "NOT NULL"
+    ]
+    sorts: [
+      reason.r_reason_desc_20: asc,
+      web_sales.average_quantity: asc,
+      web_returns.average_refunded_cash: asc,
+      web_returns.average_fee: asc
+    ]
+    limit: 100
   }
 
   query: ship_aging_by_warehouse_ship_mode_and_web_site {
