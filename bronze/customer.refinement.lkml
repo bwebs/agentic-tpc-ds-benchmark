@@ -27,6 +27,21 @@ view: +customer {
     sql: ${TABLE}.c_current_cdemo_sk ;;
   }
 
+  dimension: c_current_hdemo_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.c_current_hdemo_sk ;;
+  }
+
+  dimension: customer_full_name {
+    type: string
+    label: "Customer Full Name"
+    description: "Customer full name formatted as Last Name, First Name (CONCAT(c_last_name, ', ', c_first_name))."
+    synonyms: ["customername", "customer name"]
+    sql: CONCAT(${c_last_name}, ', ', ${c_first_name}) ;;
+  }
+
   dimension: is_preferred_customer {
     type: yesno
     label: "Preferred Customer"
