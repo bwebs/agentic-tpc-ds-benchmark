@@ -79,3 +79,20 @@ test: web_sales_date_sk_2451676_average_quantity_metrics {
     expression: ${web_sales.count} = 224 ;;
   }
 }
+
+test: web_sales_date_sk_2451911_net_paid_metrics {
+  explore_source: web_sales {
+    column: total_net_paid { field: web_sales.total_net_paid }
+    column: count { field: web_sales.count }
+    filters: {
+      field: web_sales.ws_sold_date_sk
+      value: "2451911"
+    }
+  }
+  assert: total_net_paid_matches {
+    expression: round(${web_sales.total_net_paid}, 2) = 2264574.08 ;;
+  }
+  assert: web_sales_count_matches {
+    expression: ${web_sales.count} = 970 ;;
+  }
+}
