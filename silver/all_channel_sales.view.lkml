@@ -15,6 +15,7 @@ view: all_channel_sales {
         {{ _sdt_store_sales.ss_customer_sk._sql }} AS customer_sk,
         {{ _sdt_store_sales.ss_addr_sk._sql }} AS addr_sk,
         {{ _sdt_store_sales.ss_sold_date_sk._sql }} AS sold_date_sk,
+        {{ _sdt_store_sales.ss_sold_time_sk._sql }} AS sold_time_sk,
         {{ _sdt_store_sales.ss_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_store_sales.ss_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
         {{ _sdt_store_sales.ss_ext_discount_amt._sql }} AS ext_discount_amt,
@@ -28,6 +29,7 @@ view: all_channel_sales {
         {{ _sdt_catalog_sales.cs_bill_customer_sk._sql }} AS customer_sk,
         {{ _sdt_catalog_sales.cs_bill_addr_sk._sql }} AS addr_sk,
         {{ _sdt_catalog_sales.cs_sold_date_sk._sql }} AS sold_date_sk,
+        {{ _sdt_catalog_sales.cs_sold_time_sk._sql }} AS sold_time_sk,
         {{ _sdt_catalog_sales.cs_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_catalog_sales.cs_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
         {{ _sdt_catalog_sales.cs_ext_discount_amt._sql }} AS ext_discount_amt,
@@ -41,6 +43,7 @@ view: all_channel_sales {
         {{ _sdt_web_sales.ws_bill_customer_sk._sql }} AS customer_sk,
         {{ _sdt_web_sales.ws_bill_addr_sk._sql }} AS addr_sk,
         {{ _sdt_web_sales.ws_sold_date_sk._sql }} AS sold_date_sk,
+        {{ _sdt_web_sales.ws_sold_time_sk._sql }} AS sold_time_sk,
         {{ _sdt_web_sales.ws_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_web_sales.ws_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
         {{ _sdt_web_sales.ws_ext_discount_amt._sql }} AS ext_discount_amt,
@@ -94,6 +97,14 @@ view: all_channel_sales {
     value_format_name: id
     tags: ["foreign_key"]
     sql: ${TABLE}.sold_date_sk ;;
+  }
+
+  dimension: sold_time_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    description: "Sold time surrogate key across store, catalog, and web sales (ss_sold_time_sk, cs_sold_time_sk, ws_sold_time_sk)."
+    sql: ${TABLE}.sold_time_sk ;;
   }
 
   dimension: ext_list_price {

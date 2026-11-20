@@ -8,6 +8,8 @@ include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
 include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
+include: "/bronze/time_dim.view.lkml"
+include: "/bronze/time_dim.refinement.lkml"
 include: "/bronze/store_sales.view.lkml"
 include: "/bronze/store_sales.refinement.lkml"
 include: "/bronze/catalog_sales.view.lkml"
@@ -44,6 +46,12 @@ explore: all_channel_sales {
     sql_on: ${all_channel_sales.item_sk} = ${item.i_item_sk} ;;
   }
 
+  join: time_dim {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${all_channel_sales.sold_time_sk} = ${time_dim.t_time_sk} ;;
+  }
+
   join: all_channel_sales_customer_date_dim_fields {
     sql: ;;
     relationship: one_to_one
@@ -68,6 +76,24 @@ explore: all_channel_sales {
     sql: ;;
     relationship: one_to_one
     fields: []
+  }
+
+  query: brand_meal_time_sales_nov_2001 {
+    description: "Extended sales price across web, catalog, and store channels by item brand and meal-time hour/minute for manager 1 during breakfast and dinner in November 2001."
+    dimensions: [
+      item.i_brand_id,
+      item.i_brand,
+      time_dim.t_hour,
+      time_dim.t_minute
+    ]
+    measures: [all_channel_sales.total_sales]
+    filters: [
+      date_dim.d_year_num: "2001",
+      date_dim.d_moy: "11",
+      item.i_manager_id: "1",
+      time_dim.t_meal_time: "breakfast,dinner"
+    ]
+    sorts: [all_channel_sales.total_sales: desc, item.i_brand_id: asc]
   }
 
   query: balanced_channel_item_revenue_week_5330 {
