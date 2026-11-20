@@ -726,3 +726,64 @@ test: store_sales_dec_1998_manager_33_brand_sales_metrics {
     expression: ${store_sales.count} = 1584 ;;
   }
 }
+
+test: store_sales_dec_2001_books_promotional_sales_metrics {
+  explore_source: store_sales {
+    column: promotional_ext_sales_price { field: promotion_store_sales_fields.promotional_ext_sales_price }
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: promotional_sales_pct { field: promotion_store_sales_fields.promotional_sales_pct }
+    column: count { field: store_sales.count }
+    filters: {
+      field: customer_address.ca_gmt_offset
+      value: "-7"
+    }
+    filters: {
+      field: item.i_category
+      value: "Books"
+    }
+    filters: {
+      field: store.s_gmt_offset
+      value: "-5"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2001"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "12"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: promotional_ext_sales_price_matches {
+    expression: round(${promotion_store_sales_fields.promotional_ext_sales_price}, 2) = 907328.05 ;;
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${store_sales.total_ext_sales_price}, 2) = 1806087.79 ;;
+  }
+  assert: promotional_sales_pct_matches {
+    expression: round(${promotion_store_sales_fields.promotional_sales_pct}, 2) = 50.24 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 961 ;;
+  }
+}

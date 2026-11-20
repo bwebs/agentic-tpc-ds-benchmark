@@ -23,6 +23,7 @@ include: "/silver/customer_demographics_household_demographics_store_sales_field
 include: "/silver/sales_customer_address_store_sales_fields.view.lkml"
 include: "/silver/customer_address_store_fields.view.lkml"
 include: "/silver/date_dim_store_sales_fields.view.lkml"
+include: "/silver/promotion_store_sales_fields.view.lkml"
 include: "/silver/store_returns_store_sales_fields.view.lkml"
 
 explore: store_sales {
@@ -137,6 +138,37 @@ explore: store_sales {
   join: store_returns_store_sales_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: promotion_store_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: promotional_vs_total_books_sales_dec_2001_gmt_minus_7 {
+    description: "December 2001 Books store sales promotional extended sales price, total extended sales price, and promotional sales percentage in GMT-7 stores and customer addresses"
+    measures: [
+      promotion_store_sales_fields.promotional_ext_sales_price,
+      store_sales.total_ext_sales_price,
+      promotion_store_sales_fields.promotional_sales_pct
+    ]
+    filters: [
+      customer_address.ca_gmt_offset: "-7",
+      item.i_category: "Books",
+      store.s_gmt_offset: "-7",
+      date_dim.d_year_num: "2001",
+      date_dim.d_moy: "12",
+      date_dim.d_date_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      promotion_store_sales_fields.promotional_ext_sales_price: asc,
+      store_sales.total_ext_sales_price: asc
+    ]
+    limit: 100
   }
 
   query: store_returns_aging_by_store_sep_2002 {
