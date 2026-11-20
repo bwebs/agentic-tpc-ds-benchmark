@@ -8,6 +8,13 @@ view: +catalog_returns {
     sql: CONCAT(CAST(${cr_item_sk} AS STRING), '_', CAST(${cr_order_number} AS STRING)) ;;
   }
 
+  dimension: cr_call_center_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cr_call_center_sk ;;
+  }
+
   dimension: cr_catalog_page_sk {
     type: number
     value_format_name: id
@@ -53,5 +60,13 @@ view: +catalog_returns {
     value_format_name: usd
     description: "Sum of catalog return amount including tax (cr_return_amt_inc_tax)."
     synonyms: ["ctr_total_return", "total return including tax"]
+  }
+
+  measure: total_net_loss {
+    type: sum
+    sql: ${cr_net_loss} ;;
+    value_format_name: usd
+    description: "Total catalog returns net loss (SUM(cr_net_loss))."
+    synonyms: ["returns_loss", "total returns loss", "net loss"]
   }
 }
