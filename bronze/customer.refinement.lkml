@@ -43,4 +43,12 @@ view: +customer {
     filters: [is_preferred_customer: "Yes"]
     description: "Count of preferred customer records (c_preferred_cust_flag = Y)."
   }
+
+  measure: average_birth_year {
+    type: average
+    sql: ${c_birth_year} ;;
+    value_format_name: decimal_2
+    tags: ["non_additive"]
+    description: "Average customer birth year (AVG(c_birth_year))."
+  }
 }
