@@ -594,3 +594,52 @@ test: store_sales_2000_weekend_midway_fairview_address_join_metrics {
     expression: ${store_sales.count} = 156841 ;;
   }
 }
+
+test: store_sales_sep_2002_return_aging_metrics {
+  explore_source: store_sales {
+    column: days_30 { field: store_returns_store_sales_fields.days_30 }
+    column: days_31_60 { field: store_returns_store_sales_fields.days_31_60 }
+    column: days_61_90 { field: store_returns_store_sales_fields.days_61_90 }
+    column: days_91_120 { field: store_returns_store_sales_fields.days_91_120 }
+    column: days_over_120 { field: store_returns_store_sales_fields.days_over_120 }
+    filters: {
+      field: returned_date.d_year_num
+      value: "2002"
+    }
+    filters: {
+      field: returned_date.d_moy
+      value: "9"
+    }
+    filters: {
+      field: store_returns.sr_ticket_number
+      value: "NOT NULL"
+    }
+    filters: {
+      field: returned_date.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: days_30_matches {
+    expression: ${store_returns_store_sales_fields.days_30} = 679 ;;
+  }
+  assert: days_31_60_matches {
+    expression: ${store_returns_store_sales_fields.days_31_60} = 524 ;;
+  }
+  assert: days_61_90_matches {
+    expression: ${store_returns_store_sales_fields.days_61_90} = 312 ;;
+  }
+  assert: days_91_120_matches {
+    expression: ${store_returns_store_sales_fields.days_91_120} = 289 ;;
+  }
+  assert: days_over_120_matches {
+    expression: ${store_returns_store_sales_fields.days_over_120} = 579 ;;
+  }
+}

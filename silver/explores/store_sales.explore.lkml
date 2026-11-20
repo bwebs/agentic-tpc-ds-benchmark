@@ -13,6 +13,8 @@ include: "/bronze/promotion.view.lkml"
 include: "/bronze/promotion.refinement.lkml"
 include: "/bronze/store.view.lkml"
 include: "/bronze/store.refinement.lkml"
+include: "/bronze/store_returns.view.lkml"
+include: "/bronze/store_returns.refinement.lkml"
 include: "/bronze/household_demographics.view.lkml"
 include: "/bronze/household_demographics.refinement.lkml"
 include: "/silver/item_category_price_facts.view.lkml"
@@ -21,6 +23,7 @@ include: "/silver/customer_demographics_household_demographics_store_sales_field
 include: "/silver/sales_customer_address_store_sales_fields.view.lkml"
 include: "/silver/customer_address_store_fields.view.lkml"
 include: "/silver/date_dim_store_sales_fields.view.lkml"
+include: "/silver/store_returns_store_sales_fields.view.lkml"
 
 explore: store_sales {
   extends: [store_sales_base]
@@ -113,6 +116,71 @@ explore: store_sales {
   join: date_dim_store_sales_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: store_returns {
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${store_sales.ss_ticket_number} = ${store_returns.sr_ticket_number}
+      AND ${store_sales.ss_item_sk} = ${store_returns.sr_item_sk}
+      AND ${store_sales.ss_customer_sk} = ${store_returns.sr_customer_sk} ;;
+  }
+
+  join: returned_date {
+    from: date_dim
+    view_label: "Returned Date"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_returns.sr_returned_date_sk} = ${returned_date.d_date_sk} ;;
+  }
+
+  join: store_returns_store_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: store_returns_aging_by_store_sep_2002 {
+    description: "September 2002 store returns count across 30/60/90/120/120+ day return windows by store address"
+    dimensions: [
+      store.s_store_name,
+      store.s_company_id,
+      store.s_street_number,
+      store.s_street_name,
+      store.s_street_type,
+      store.s_suite_number,
+      store.s_city,
+      store.s_county,
+      store.s_state,
+      store.s_zip
+    ]
+    measures: [
+      store_returns_store_sales_fields.days_30,
+      store_returns_store_sales_fields.days_31_60,
+      store_returns_store_sales_fields.days_61_90,
+      store_returns_store_sales_fields.days_91_120,
+      store_returns_store_sales_fields.days_over_120
+    ]
+    filters: [
+      returned_date.d_year_num: "2002",
+      returned_date.d_moy: "9",
+      store_returns.sr_ticket_number: "NOT NULL",
+      returned_date.d_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL"
+    ]
+    sorts: [
+      store.s_store_name: asc,
+      store.s_company_id: asc,
+      store.s_street_number: asc,
+      store.s_street_name: asc,
+      store.s_street_type: asc,
+      store.s_suite_number: asc,
+      store.s_city: asc,
+      store.s_county: asc,
+      store.s_state: asc,
+      store.s_zip: asc
+    ]
+    limit: 100
   }
 
   query: store_sales_1999_demographic_state_quantity {
