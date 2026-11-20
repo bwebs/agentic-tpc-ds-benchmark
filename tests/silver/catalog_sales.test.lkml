@@ -77,3 +77,47 @@ test: catalog_sales_multi_warehouse_unreturned_2002_metrics {
     expression: round(${catalog_sales.total_net_profit}, 2) = -116138.96 ;;
   }
 }
+
+test: catalog_sales_2001_female_secondary_ed_demographics_metrics {
+  explore_source: catalog_sales {
+    column: average_quantity { field: catalog_sales.average_quantity }
+    column: average_sales_price { field: catalog_sales.average_sales_price }
+    column: average_birth_year { field: customer.average_birth_year }
+    column: average_dependent_count { field: cd1.average_dependent_count }
+    column: count { field: catalog_sales.count }
+    filters: [
+      cd1.cd_gender: "F",
+      cd1.cd_education_status: "Secondary",
+      customer.c_birth_month: "8, 4, 2, 5, 11, 9",
+      date_dim.d_year_num: "2001",
+      customer_address.ca_state: "KS,IA,AL,UT,VA,NC,TX",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_bill_cdemo_sk: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      catalog_sales.cs_bill_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer.c_current_cdemo_sk: "NOT NULL",
+      cd2.cd_demo_sk: "NOT NULL",
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL"
+    ]
+  }
+  assert: average_quantity_matches {
+    expression: round(${catalog_sales.average_quantity}, 2) = 51.18 ;;
+  }
+  assert: average_sales_price_matches {
+    expression: round(${catalog_sales.average_sales_price}, 2) = 50.95 ;;
+  }
+  assert: average_birth_year_matches {
+    expression: round(${customer.average_birth_year}, 2) = 1957.71 ;;
+  }
+  assert: average_dependent_count_matches {
+    expression: round(${cd1.average_dependent_count}, 2) = 2.95 ;;
+  }
+  assert: count_matches {
+    expression: ${catalog_sales.count} = 2140 ;;
+  }
+}

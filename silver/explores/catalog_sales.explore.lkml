@@ -5,8 +5,12 @@ include: "/bronze/customer.view.lkml"
 include: "/bronze/customer.refinement.lkml"
 include: "/bronze/customer_address.view.lkml"
 include: "/bronze/customer_address.refinement.lkml"
+include: "/bronze/customer_demographics.view.lkml"
+include: "/bronze/customer_demographics.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
+include: "/bronze/item.view.lkml"
+include: "/bronze/item.refinement.lkml"
 include: "/silver/catalog_order_return_facts.view.lkml"
 include: "/silver/catalog_order_warehouse_facts.view.lkml"
 include: "/silver/catalog_sales_customer_address_fields.view.lkml"
@@ -72,6 +76,73 @@ explore: catalog_sales {
   join: catalog_sales_customer_address_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: item {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_item_sk} = ${item.i_item_sk} ;;
+  }
+
+  join: cd1 {
+    from: customer_demographics
+    view_label: "Bill Customer Demographics"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_bill_cdemo_sk} = ${cd1.cd_demo_sk} ;;
+  }
+
+  join: cd2 {
+    from: customer_demographics
+    view_label: "Current Customer Demographics"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${customer.c_current_cdemo_sk} = ${cd2.cd_demo_sk} ;;
+  }
+
+  query: female_secondary_ed_2001_averages_by_item_and_county {
+    description: "2001 catalog sales averages by item and county for female secondary-educated bill demographics and target customer states/birth months"
+    dimensions: [
+      item.i_item_id,
+      customer_address.ca_country,
+      customer_address.ca_state,
+      customer_address.ca_county
+    ]
+    measures: [
+      catalog_sales.average_quantity,
+      catalog_sales.average_list_price,
+      catalog_sales.average_coupon_amount,
+      catalog_sales.average_sales_price,
+      catalog_sales.average_net_profit,
+      customer.average_birth_year,
+      cd1.average_dependent_count
+    ]
+    filters: [
+      cd1.cd_gender: "F",
+      cd1.cd_education_status: "Secondary",
+      customer.c_birth_month: "8, 4, 2, 5, 11, 9",
+      date_dim.d_year_num: "2001",
+      customer_address.ca_state: "KS,IA,AL,UT,VA,NC,TX",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_bill_cdemo_sk: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      catalog_sales.cs_bill_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer.c_current_cdemo_sk: "NOT NULL",
+      cd2.cd_demo_sk: "NOT NULL",
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL"
+    ]
+    sorts: [
+      customer_address.ca_country: asc,
+      customer_address.ca_state: asc,
+      customer_address.ca_county: asc,
+      item.i_item_id: asc
+    ]
+    limit: 100
   }
 
   query: multi_warehouse_unreturned_orders_2002 {
