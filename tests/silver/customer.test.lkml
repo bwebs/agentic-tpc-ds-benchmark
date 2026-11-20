@@ -92,3 +92,38 @@ test: customer_2002_apr_jul_multichannel_demographics_metrics {
     expression: ${customer.count} = ${customer_2002_apr_jul_channel_flags.count} ;;
   }
 }
+
+test: customer_web_yoy_list_net_2001_2002_cohort_metrics {
+  explore_source: customer {
+    column: c_customer_id { field: customer.c_customer_id }
+    column: total_web_2001_list_net_total { field: customer_channel_yoy_facts.total_web_2001_list_net_total }
+    column: total_web_2002_list_net_total { field: customer_channel_yoy_facts.total_web_2002_list_net_total }
+    column: web_list_net_yoy_ratio { field: customer_channel_yoy_facts.web_list_net_yoy_ratio }
+    column: store_list_net_yoy_ratio { field: customer_channel_yoy_facts.store_list_net_yoy_ratio }
+    filters: {
+      field: customer_channel_yoy_facts.is_web_yoy_outpacing_store_list_net_2001_2002
+      value: "Yes"
+    }
+    filters: {
+      field: customer_channel_yoy_facts.c_customer_id
+      value: "-NULL"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "<=20000"
+    }
+    sorts: [customer.c_customer_id: asc]
+  }
+  assert: cohort_customer_count_matches {
+    expression: count(${customer.c_customer_id}) = 14 ;;
+  }
+  assert: web_2001_list_net_total_matches {
+    expression: round(sum(${customer_channel_yoy_facts.total_web_2001_list_net_total}), 2) = 359304.63 ;;
+  }
+  assert: web_2002_list_net_total_matches {
+    expression: round(sum(${customer_channel_yoy_facts.total_web_2002_list_net_total}), 2) = 572828.98 ;;
+  }
+  assert: web_yoy_exceeds_store_yoy {
+    expression: ${customer_channel_yoy_facts.web_list_net_yoy_ratio} > ${customer_channel_yoy_facts.store_list_net_yoy_ratio} ;;
+  }
+}
