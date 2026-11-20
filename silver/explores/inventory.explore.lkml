@@ -5,6 +5,7 @@ include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
+include: "/silver/catalog_sold_items.view.lkml"
 include: "/silver/date_dim_inventory_fields.view.lkml"
 
 explore: inventory {
@@ -31,9 +32,37 @@ explore: inventory {
     sql_on: ${inventory.inv_date_sk} = ${date_dim.d_date_sk} ;;
   }
 
+  join: catalog_sold_items {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${inventory.inv_item_sk} = ${catalog_sold_items.cs_item_sk} ;;
+  }
+
   join: date_dim_inventory_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  query: catalog_sold_items_mar_may_1999_by_item {
+    description: "Catalog-sold items priced $20-$50 from manufacturers 843, 815, 850, and 840 with inventory quantity on hand 100-500 between 1999-03-06 and 1999-05-06"
+    dimensions: [
+      item.i_item_id,
+      item.i_item_desc,
+      item.i_current_price
+    ]
+    filters: [
+      item.i_current_price: "[20, 50]",
+      date_dim.d_date: "1999-03-06 to 1999-05-07",
+      item.i_manufact_id: "843, 815, 850, 840",
+      inventory.inv_quantity_on_hand: "[100, 500]",
+      catalog_sold_items.has_catalog_sales: "Yes",
+      inventory.inv_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      inventory.inv_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL"
+    ]
+    sorts: [item.i_item_id: asc]
+    limit: 100
   }
 
   query: inventory_before_after_2000_05_13_by_warehouse_and_item {
