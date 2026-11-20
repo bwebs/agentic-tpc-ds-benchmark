@@ -145,6 +145,46 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: early_month_out_of_city_ticket_sales_1998_2000 {
+    description: "1998-2000 days 1-2 of month store sales extended price, extended tax, and list price by customer, current city, sales city, and ticket in Fairview and Midway"
+    dimensions: [
+      customer.c_last_name,
+      customer.c_first_name,
+      customer_address.ca_city,
+      sales_customer_address.ca_city,
+      store_sales.ss_ticket_number
+    ]
+    measures: [
+      store_sales.total_ext_sales_price,
+      store_sales.total_ext_tax,
+      store_sales.total_ext_list_price
+    ]
+    filters: [
+      store.s_city: "Fairview,Midway",
+      date_dim.d_dom: "[1, 2]",
+      date_dim.d_year_num: "1998, 1999, 2000",
+      customer_address.ca_city: "-NULL",
+      sales_customer_address.ca_city: "-NULL",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_hdemo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      store_sales.ss_addr_sk: "NOT NULL",
+      sales_customer_address.ca_address_sk: "NOT NULL",
+      store_sales.ss_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL"
+    ]
+    sorts: [
+      customer.c_last_name: asc,
+      store_sales.ss_ticket_number: asc
+    ]
+    limit: 100
+  }
+
   query: promotional_vs_total_books_sales_dec_2001_gmt_minus_7 {
     description: "December 2001 Books store sales promotional extended sales price, total extended sales price, and promotional sales percentage in GMT-7 stores and customer addresses"
     measures: [

@@ -334,3 +334,24 @@ test: store_sales_date_2451911_sales_price_x_quantity {
     expression: ${store_sales.count} = 3142 ;;
   }
 }
+
+test: store_sales_date_sk_2451911_ext_list_and_tax_metrics {
+  explore_source: store_sales {
+    column: total_ext_list_price { field: store_sales.total_ext_list_price }
+    column: total_ext_tax { field: store_sales.total_ext_tax }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451911"
+    }
+  }
+  assert: total_ext_list_price_matches {
+    expression: round(${store_sales.total_ext_list_price}, 2) = 11667480.74 ;;
+  }
+  assert: total_ext_tax_matches {
+    expression: round(${store_sales.total_ext_tax}, 2) = 229711.77 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 3142 ;;
+  }
+}
