@@ -109,6 +109,43 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: williamson_county_ticket_counts_1999_2001_high_dep_ratio {
+    description: "Customer details and line-item counts (15 to 20) per store sales ticket in Williamson County across 1999-2001 on days 1-3 or 25-28 for households with >10000 or unknown buy potential and dependent-to-vehicle ratio > 1.2"
+    dimensions: [
+      customer.c_last_name,
+      customer.c_first_name,
+      customer.c_salutation,
+      customer.c_preferred_cust_flag,
+      store_sales.ss_ticket_number,
+      store_sales.ss_customer_sk
+    ]
+    measures: [store_sales.count]
+    filters: [
+      date_dim.d_dom: "[1, 3], [25, 28]",
+      date_dim.d_year_num: "1999, 2000, 2001",
+      store.s_county: "Williamson County",
+      household_demographics.hd_buy_potential: ">10000,unknown",
+      household_demographics.hd_vehicle_count: ">0",
+      household_demographics.is_dep_to_vehicle_ratio_over_1_2: "Yes",
+      store_sales.count: "[15, 20]",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_hdemo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      store_sales.ss_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL"
+    ]
+    sorts: [
+      customer.c_last_name: asc,
+      customer.c_first_name: asc,
+      customer.c_salutation: asc,
+      customer.c_preferred_cust_flag: desc
+    ]
+    limit: 500
+  }
+
   query: quantity_price_bucket_list_price_summary {
     description: "Average, count, and distinct count of list price across six mutually exclusive store sales quantity and price/coupon/wholesale buckets (B1..B6)"
     measures: [
