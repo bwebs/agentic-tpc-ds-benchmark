@@ -18,4 +18,11 @@ view: +promotion {
     type: yesno
     sql: ${p_channel_email} = 'N' OR ${p_channel_event} = 'N' ;;
   }
+
+  dimension: is_dmail_email_or_tv_channel {
+    label: "Direct Mail, Email, or TV Channel"
+    description: "Whether the promotion is active on direct mail, email, or TV (p_channel_dmail = 'Y' OR p_channel_email = 'Y' OR p_channel_tv = 'Y')."
+    type: yesno
+    sql: ${p_channel_dmail} = 'Y' OR ${p_channel_email} = 'Y' OR ${p_channel_tv} = 'Y' ;;
+  }
 }
