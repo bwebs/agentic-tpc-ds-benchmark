@@ -670,4 +670,22 @@ explore: store_sales {
     ]
     limit: 100
   }
+
+  query: net_profit_by_state_county_12m_1200 {
+    description: "Store sales net profit by state and county for month_seq 1200-1211"
+    dimensions: [store.s_state, store.s_county]
+    measures: [store_sales.total_net_profit]
+    filters: [
+      date_dim.d_month_seq: "[1200, 1211]",
+      store.s_state: "-NULL",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL"
+    ]
+    sorts: [
+      store.s_state: asc
+    ]
+    limit: 100
+  }
 }
