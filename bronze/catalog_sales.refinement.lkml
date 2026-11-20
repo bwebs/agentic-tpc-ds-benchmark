@@ -22,10 +22,28 @@ view: +catalog_sales {
     sql: ${TABLE}.cs_item_sk ;;
   }
 
+  dimension: cs_bill_customer_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cs_bill_customer_sk ;;
+  }
+
+  measure: count {
+    description: "Count of catalog sales records."
+  }
+
   measure: total_ext_sales_price {
     type: sum
     sql: ${cs_ext_sales_price} ;;
     value_format_name: usd
     description: "Sum of extended catalog sales price (cs_ext_sales_price)."
+  }
+
+  measure: total_sales_price {
+    type: sum
+    sql: ${cs_sales_price} ;;
+    value_format_name: usd
+    description: "Sum of catalog item sales price (cs_sales_price)."
   }
 }
