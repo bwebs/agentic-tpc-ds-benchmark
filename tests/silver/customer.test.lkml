@@ -54,3 +54,41 @@ test: customer_zip_prefix_31_preferred_address_metrics {
     expression: ${customer.count} = 1193 ;;
   }
 }
+
+test: customer_2002_apr_jul_multichannel_demographics_metrics {
+  explore_source: customer {
+    column: cd_gender { field: customer_demographics.cd_gender }
+    column: count { field: customer.count }
+    column: channel_flag_count { field: customer_2002_apr_jul_channel_flags.count }
+    filters: {
+      field: customer_address.ca_county
+      value: "Lycoming County,Sheridan County,Kandiyohi County,Pike County,Greene County"
+    }
+    filters: {
+      field: customer.c_current_cdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_demographics.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_2002_apr_jul_channel_flags.has_store_sales
+      value: "Yes"
+    }
+    filters: {
+      field: customer_2002_apr_jul_channel_flags.has_web_or_catalog_ship_sales
+      value: "Yes"
+    }
+    sorts: [customer_demographics.cd_gender: asc]
+  }
+  assert: female_and_male_counts_match {
+    expression: index(${customer_demographics.cd_gender}, 1) = "F"
+      AND index(${customer.count}, 1) = 1
+      AND index(${customer_demographics.cd_gender}, 2) = "M"
+      AND index(${customer.count}, 2) = 2 ;;
+  }
+  assert: one_to_one_channel_flag_count_matches {
+    expression: ${customer.count} = ${customer_2002_apr_jul_channel_flags.count} ;;
+  }
+}
