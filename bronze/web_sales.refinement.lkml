@@ -126,4 +126,12 @@ view: +web_sales {
     tags: ["non_additive"]
     description: "Average web sales item quantity (AVG(ws_quantity))."
   }
+
+  measure: total_net_paid {
+    type: sum
+    sql: ${ws_net_paid} ;;
+    value_format_name: usd
+    synonyms: ["total_sum"]
+    description: "Sum of web sales net paid amount (SUM(ws_net_paid))."
+  }
 }

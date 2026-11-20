@@ -127,6 +127,18 @@ explore: web_sales {
     sql_on: ${web_returns.wr_reason_sk} = ${reason.r_reason_sk} ;;
   }
 
+  query: net_paid_by_category_and_class_month_seq_1183_1194 {
+    description: "Web sales total net paid grouped by item category and class for sold month sequence 1183..1194."
+    dimensions: [item.i_category, item.i_class]
+    measures: [web_sales.total_net_paid]
+    filters: [
+      date_dim.d_month_seq: "[1183, 1194]",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [item.i_category: asc]
+    limit: 100
+  }
+
   query: web_returns_2001_averages_by_reason {
     description: "2001 average web sales quantity, refunded cash, and return fee by return reason across US state and matching refunded/returning demographic tiers."
     dimensions: [reason.r_reason_desc_20]
