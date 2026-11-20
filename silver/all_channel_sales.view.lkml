@@ -162,8 +162,27 @@ view: all_channel_sales {
     type: sum
     sql: ${ext_sales_price} ;;
     value_format_name: usd
-    synonyms: ["total_sales"]
     description: "Sum of extended sales price across store, catalog, and web channels."
+  }
+
+  dimension: has_ext_sales_price {
+    hidden: yes
+    type: number
+    sql: IF(${ext_sales_price} IS NOT NULL, 1, 0) ;;
+  }
+
+  measure: _ext_sales_price_nonnull_count {
+    hidden: yes
+    type: sum
+    sql: ${has_ext_sales_price} ;;
+  }
+
+  measure: total_sales {
+    type: number
+    sql: IF(${_ext_sales_price_nonnull_count} > 0, ${total_ext_sales_price}, NULL) ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Sum of extended sales price across store, catalog, and web channels (NULL when all rows have NULL ext_sales_price)."
   }
 
   measure: total_ext_list_minus_discount {
