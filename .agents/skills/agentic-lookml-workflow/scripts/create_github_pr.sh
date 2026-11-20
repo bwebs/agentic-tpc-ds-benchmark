@@ -15,9 +15,7 @@ fi
 HEAD_BRANCH=$(jq -r '.branch_name' "$DATA_JSON")
 BASE_BRANCH=$(jq -r '.production_branch // "main"' "$DATA_JSON")
 
-if [[ -d "$SESSION_DIR/lookml" && ! -f "$SESSION_DIR/snapshot_check.json" ]]; then
-  lkr parse lookml snapshot --path "$SESSION_DIR/lookml" --allow-additions --format json --output "$SESSION_DIR/snapshot_check.json" || true
-fi
+# ponytail: skip snapshot generation per benchmark configuration (no snapshots run or stored)
 
 SNAPSHOT_SECTION=""
 PR_EXTRA_ARGS=()

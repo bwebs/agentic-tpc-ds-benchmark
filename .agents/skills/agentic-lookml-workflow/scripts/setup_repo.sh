@@ -15,7 +15,10 @@ sync_model_includes() {
   fi
 
   local model_file="$target_dir/${model_name}.model.lkml"
-  mkdir -p "$target_dir"
+  if [[ -f "$target_dir/models/${model_name}.model.lkml" || -d "$target_dir/models" ]]; then
+    model_file="$target_dir/models/${model_name}.model.lkml"
+  fi
+  mkdir -p "$(dirname "$model_file")"
   if [[ ! -f "$model_file" ]]; then
     echo "connection: \"$conn_name\"" > "$model_file"
     echo "Created LookML model file: $model_file"
