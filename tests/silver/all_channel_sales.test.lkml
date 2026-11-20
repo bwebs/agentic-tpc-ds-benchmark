@@ -78,3 +78,36 @@ test: all_channel_sales_week_5330_channel_revenue_metrics {
     expression: ${all_channel_sales.is_balanced_across_channels} = no ;;
   }
 }
+
+test: all_channel_sales_nov2001_manager1_meal_time {
+  explore_source: all_channel_sales {
+    column: count { field: all_channel_sales.count }
+    column: total_sales { field: all_channel_sales.total_sales }
+    column: distinct_channel_count { field: all_channel_sales.distinct_channel_count }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2001"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "11"
+    }
+    filters: {
+      field: item.i_manager_id
+      value: "1"
+    }
+    filters: {
+      field: time_dim.t_meal_time
+      value: "breakfast,dinner"
+    }
+  }
+  assert: row_count_matches {
+    expression: ${all_channel_sales.count} = 991 ;;
+  }
+  assert: total_sales_matches {
+    expression: round(${all_channel_sales.total_sales}, 2) = 2077500.51 ;;
+  }
+  assert: distinct_channel_count_matches {
+    expression: ${all_channel_sales.distinct_channel_count} = 3 ;;
+  }
+}
