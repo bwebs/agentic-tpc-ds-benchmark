@@ -52,3 +52,28 @@ test: catalog_sales_q1_1998_ca_target_filter_metrics {
     expression: ${catalog_sales.count} = 812 ;;
   }
 }
+
+test: catalog_sales_multi_warehouse_unreturned_2002_metrics {
+  explore_source: catalog_sales {
+    column: order_count { field: catalog_sales.order_count }
+    column: total_shipping_cost { field: catalog_sales.total_shipping_cost }
+    column: total_net_profit { field: catalog_sales.total_net_profit }
+    filters: [
+      ship_date_dim.d_date: "2002-03-01 to 2002-05-02",
+      ship_customer_address.ca_state: "IA",
+      call_center.cc_county: "Williamson County",
+      catalog_sales.cs_warehouse_sk: "NOT NULL",
+      catalog_order_warehouse_facts.is_multi_warehouse_order: "Yes",
+      catalog_order_return_facts.cr_order_number: "NULL"
+    ]
+  }
+  assert: order_count_matches {
+    expression: ${catalog_sales.order_count} = 114 ;;
+  }
+  assert: total_shipping_cost_matches {
+    expression: round(${catalog_sales.total_shipping_cost}, 2) = 443596.18 ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${catalog_sales.total_net_profit}, 2) = -116138.96 ;;
+  }
+}
