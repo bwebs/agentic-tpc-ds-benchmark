@@ -13,6 +13,13 @@ view: +customer {
     sql: ${TABLE}.c_customer_sk ;;
   }
 
+  dimension: c_current_addr_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.c_current_addr_sk ;;
+  }
+
   measure: count {
     description: "Count of customer records."
   }
