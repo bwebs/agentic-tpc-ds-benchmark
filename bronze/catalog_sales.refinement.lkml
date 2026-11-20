@@ -93,6 +93,7 @@ view: +catalog_sales {
     type: sum
     sql: ${cs_ext_sales_price} ;;
     value_format_name: usd
+    synonyms: ["itemrevenue"]
     description: "Sum of extended catalog sales price (cs_ext_sales_price)."
   }
 
