@@ -198,4 +198,74 @@ view: all_channel_sales {
     tags: ["non_additive"]
     description: "Count of distinct sales channels ('s' store, 'c' catalog, 'w' web) with activity."
   }
+
+  measure: ss_item_rev {
+    type: sum
+    sql: ${ext_sales_price} ;;
+    filters: [sale_type: "s"]
+    value_format_name: usd
+    description: "Store sales extended sales price revenue (sale_type = 's')."
+  }
+
+  measure: cs_item_rev {
+    type: sum
+    sql: ${ext_sales_price} ;;
+    filters: [sale_type: "c"]
+    value_format_name: usd
+    description: "Catalog sales extended sales price revenue (sale_type = 'c')."
+  }
+
+  measure: ws_item_rev {
+    type: sum
+    sql: ${ext_sales_price} ;;
+    filters: [sale_type: "w"]
+    value_format_name: usd
+    description: "Web sales extended sales price revenue (sale_type = 'w')."
+  }
+
+  measure: ss_dev {
+    type: number
+    sql: ${ss_item_rev} / NULLIF(${ss_item_rev} + ${cs_item_rev} + ${ws_item_rev}, 0) / 3 * 100 ;;
+    value_format_name: decimal_4
+    tags: ["non_additive"]
+    description: "Store channel share divided by 3, scaled by 100 (ss_item_rev / (ss_item_rev + cs_item_rev + ws_item_rev) / 3 * 100)."
+  }
+
+  measure: cs_dev {
+    type: number
+    sql: ${cs_item_rev} / NULLIF(${ss_item_rev} + ${cs_item_rev} + ${ws_item_rev}, 0) / 3 * 100 ;;
+    value_format_name: decimal_4
+    tags: ["non_additive"]
+    description: "Catalog channel share divided by 3, scaled by 100 (cs_item_rev / (ss_item_rev + cs_item_rev + ws_item_rev) / 3 * 100)."
+  }
+
+  measure: ws_dev {
+    type: number
+    sql: ${ws_item_rev} / NULLIF(${ss_item_rev} + ${cs_item_rev} + ${ws_item_rev}, 0) / 3 * 100 ;;
+    value_format_name: decimal_4
+    tags: ["non_additive"]
+    description: "Web channel share divided by 3, scaled by 100 (ws_item_rev / (ss_item_rev + cs_item_rev + ws_item_rev) / 3 * 100)."
+  }
+
+  measure: average_channel_rev {
+    type: number
+    sql: (${ss_item_rev} + ${cs_item_rev} + ${ws_item_rev}) / 3 ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    synonyms: ["average"]
+    description: "Average revenue across store, catalog, and web sales channels ((ss_item_rev + cs_item_rev + ws_item_rev) / 3)."
+  }
+
+  measure: is_balanced_across_channels {
+    type: yesno
+    sql: ${distinct_channel_count} = 3
+      AND ${ss_item_rev} BETWEEN 0.9 * ${cs_item_rev} AND 1.1 * ${cs_item_rev}
+      AND ${ss_item_rev} BETWEEN 0.9 * ${ws_item_rev} AND 1.1 * ${ws_item_rev}
+      AND ${cs_item_rev} BETWEEN 0.9 * ${ss_item_rev} AND 1.1 * ${ss_item_rev}
+      AND ${cs_item_rev} BETWEEN 0.9 * ${ws_item_rev} AND 1.1 * ${ws_item_rev}
+      AND ${ws_item_rev} BETWEEN 0.9 * ${ss_item_rev} AND 1.1 * ${ss_item_rev}
+      AND ${ws_item_rev} BETWEEN 0.9 * ${cs_item_rev} AND 1.1 * ${cs_item_rev} ;;
+    tags: ["non_additive"]
+    description: "Whether all three channels (store, catalog, web) have activity and each channel's revenue is within +/- 10% of every other channel's revenue."
+  }
 }

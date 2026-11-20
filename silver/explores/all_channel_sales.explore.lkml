@@ -69,4 +69,25 @@ explore: all_channel_sales {
     relationship: one_to_one
     fields: []
   }
+
+  query: balanced_channel_item_revenue_week_5330 {
+    description: "Items with store, catalog, and web revenue within +/- 10% of each other during week sequence 5330 (week of 2002-02-25)."
+    dimensions: [item.i_item_id]
+    measures: [
+      all_channel_sales.ss_item_rev,
+      all_channel_sales.ss_dev,
+      all_channel_sales.cs_item_rev,
+      all_channel_sales.cs_dev,
+      all_channel_sales.ws_item_rev,
+      all_channel_sales.ws_dev,
+      all_channel_sales.average_channel_rev
+    ]
+    filters: [
+      date_dim.d_week_seq: "5330",
+      item.i_item_sk: "NOT NULL",
+      all_channel_sales.is_balanced_across_channels: "yes"
+    ]
+    sorts: [item.i_item_id: asc, all_channel_sales.ss_item_rev: asc]
+    limit: 100
+  }
 }
