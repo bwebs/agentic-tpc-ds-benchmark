@@ -868,3 +868,45 @@ test: store_sales_1998_dom_1_2_fairview_midway_address_join_metrics {
     expression: ${store_sales.count} = 29599 ;;
   }
 }
+
+test: store_sales_q70_state_county_profit_12m_1200 {
+  explore_source: store_sales {
+    column: s_state { field: store.s_state }
+    column: s_county { field: store.s_county }
+    column: total_net_profit { field: store_sales.total_net_profit }
+    column: count { field: store_sales.count }
+    filters: {
+      field: date_dim.d_month_seq
+      value: "[1200, 1211]"
+    }
+    filters: {
+      field: store.s_state
+      value: "TN"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: s_county_matches {
+    expression: ${store.s_county} = "Williamson County" ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${store_sales.total_net_profit}, 2) = -440986113.22 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 540754 ;;
+  }
+}
