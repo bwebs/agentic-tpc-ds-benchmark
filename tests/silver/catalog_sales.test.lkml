@@ -121,3 +121,24 @@ test: catalog_sales_2001_female_secondary_ed_demographics_metrics {
     expression: ${catalog_sales.count} = 2140 ;;
   }
 }
+
+test: catalog_sales_feb_mar_2001_children_join_metrics {
+  explore_source: catalog_sales {
+    column: total_ext_sales_price { field: catalog_sales.total_ext_sales_price }
+    column: count { field: catalog_sales.count }
+    filters: [
+      date_dim.d_date: "2001-02-03 to 2001-03-04",
+      item.i_category: "Children",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL"
+    ]
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${catalog_sales.total_ext_sales_price}, 2) = 3114911.16 ;;
+  }
+  assert: count_matches {
+    expression: ${catalog_sales.count} = 1211 ;;
+  }
+}
