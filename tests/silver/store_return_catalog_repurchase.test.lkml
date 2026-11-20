@@ -77,3 +77,38 @@ test: store_return_catalog_repurchase_2000_max_profit_loss {
       AND round(${store_return_catalog_repurchase.max_catalog_sales_profit}, 2) = 6962 ;;
   }
 }
+
+test: store_return_catalog_repurchase_2000_average_quantity {
+  explore_source: store_return_catalog_repurchase {
+    column: count { field: store_return_catalog_repurchase.count }
+    column: average_store_sales_quantity { field: store_return_catalog_repurchase.average_store_sales_quantity }
+    column: average_store_returns_quantity { field: store_return_catalog_repurchase.average_store_returns_quantity }
+    column: average_catalog_sales_quantity { field: store_return_catalog_repurchase.average_catalog_sales_quantity }
+    filters: {
+      field: d1.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: d2.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: d3.d_year_num
+      value: "2000,2001,2002"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: multi_year_repurchase_averages_match {
+    expression: ${store_return_catalog_repurchase.count} = 11
+      AND round(${store_return_catalog_repurchase.average_store_sales_quantity}, 4) = 53.9091
+      AND round(${store_return_catalog_repurchase.average_store_returns_quantity}, 4) = 11.5455
+      AND round(${store_return_catalog_repurchase.average_catalog_sales_quantity}, 4) = 64.9091 ;;
+  }
+}
