@@ -41,3 +41,40 @@ test: all_channel_sales_d2451911_distinct_channels {
     expression: ${all_channel_sales.distinct_channel_count} = 3 ;;
   }
 }
+
+test: all_channel_sales_week_5330_channel_revenue_metrics {
+  explore_source: all_channel_sales {
+    column: ss_item_rev { field: all_channel_sales.ss_item_rev }
+    column: cs_item_rev { field: all_channel_sales.cs_item_rev }
+    column: ws_item_rev { field: all_channel_sales.ws_item_rev }
+    column: average_channel_rev { field: all_channel_sales.average_channel_rev }
+    column: ss_dev { field: all_channel_sales.ss_dev }
+    column: is_balanced_across_channels { field: all_channel_sales.is_balanced_across_channels }
+    filters: {
+      field: date_dim.d_week_seq
+      value: "5330"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: ss_item_rev_matches {
+    expression: round(${all_channel_sales.ss_item_rev}, 2) = 10739950.46 ;;
+  }
+  assert: cs_item_rev_matches {
+    expression: round(${all_channel_sales.cs_item_rev}, 2) = 8037174.28 ;;
+  }
+  assert: ws_item_rev_matches {
+    expression: round(${all_channel_sales.ws_item_rev}, 2) = 3976165.70 ;;
+  }
+  assert: average_channel_rev_matches {
+    expression: round(${all_channel_sales.average_channel_rev}, 2) = 7584430.15 ;;
+  }
+  assert: ss_dev_matches {
+    expression: round(${all_channel_sales.ss_dev}, 4) = 15.7339 ;;
+  }
+  assert: is_balanced_across_channels_matches {
+    expression: ${all_channel_sales.is_balanced_across_channels} = no ;;
+  }
+}
