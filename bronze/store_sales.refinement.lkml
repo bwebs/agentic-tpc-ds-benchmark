@@ -144,6 +144,14 @@ view: +store_sales {
     synonyms: ["sum_agg", "extended discount amount"]
   }
 
+  measure: total_quantity {
+    type: sum
+    sql: ${ss_quantity} ;;
+    value_format_name: decimal_0
+    description: "Sum of quantity across store sales line items (SUM(ss_quantity))."
+    synonyms: ["quantity", "sum quantity"]
+  }
+
   measure: average_quantity {
     type: average
     sql: ${ss_quantity} ;;

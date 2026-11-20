@@ -281,3 +281,20 @@ test: store_sales_date_sk_2451911_coupon_amt_metrics {
     expression: ${store_sales.count} = 3142 ;;
   }
 }
+
+test: store_sales_date_2451149_total_quantity {
+  explore_source: store_sales {
+    column: total_quantity { field: store_sales.total_quantity }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451149"
+    }
+  }
+  assert: total_quantity_matches {
+    expression: ${store_sales.total_quantity} = 140341 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 2849 ;;
+  }
+}
