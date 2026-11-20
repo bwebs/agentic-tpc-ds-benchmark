@@ -51,3 +51,21 @@ test: catalog_sales_order_le_100_average_pricing_metrics {
     expression: ${catalog_sales.count} = 860 ;;
   }
 }
+
+test: catalog_sales_order_le_100_discount_metrics {
+  explore_source: catalog_sales {
+    column: total_ext_discount_amt { field: catalog_sales.total_ext_discount_amt }
+    column: average_ext_discount_amt { field: catalog_sales.average_ext_discount_amt }
+    column: count { field: catalog_sales.count }
+    filters: [catalog_sales.cs_order_number: "<=100"]
+  }
+  assert: total_ext_discount_amt_matches {
+    expression: round(${catalog_sales.total_ext_discount_amt}, 2) = 2006991.91 ;;
+  }
+  assert: average_ext_discount_amt_matches {
+    expression: round(${catalog_sales.average_ext_discount_amt}, 2) = 2352.86 ;;
+  }
+  assert: count_matches {
+    expression: ${catalog_sales.count} = 860 ;;
+  }
+}
