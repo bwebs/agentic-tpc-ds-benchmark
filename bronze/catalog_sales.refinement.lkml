@@ -78,6 +78,19 @@ view: +catalog_sales {
     sql: ${TABLE}.cs_promo_sk ;;
   }
 
+  dimension: cs_ship_mode_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cs_ship_mode_sk ;;
+  }
+
+  dimension: days_to_ship {
+    type: number
+    sql: ${cs_ship_date_sk} - ${cs_sold_date_sk} ;;
+    description: "Days elapsed between sold date surrogate key and ship date surrogate key."
+  }
+
   measure: count {
     description: "Count of catalog sales records."
   }
@@ -179,5 +192,35 @@ view: +catalog_sales {
     value_format_name: usd
     tags: ["non_additive"]
     description: "Average extended catalog discount amount per catalog sales line item (AVG(cs_ext_discount_amt))."
+  }
+
+  measure: days_30 {
+    type: count
+    filters: [days_to_ship: "<=30"]
+    description: "Catalog sales line items shipped within 30 days of sale."
+  }
+
+  measure: days_31_60 {
+    type: count
+    filters: [days_to_ship: "(30, 60]"]
+    description: "Catalog sales line items shipped 31 to 60 days after sale."
+  }
+
+  measure: days_61_90 {
+    type: count
+    filters: [days_to_ship: "(60, 90]"]
+    description: "Catalog sales line items shipped 61 to 90 days after sale."
+  }
+
+  measure: days_91_120 {
+    type: count
+    filters: [days_to_ship: "(90, 120]"]
+    description: "Catalog sales line items shipped 91 to 120 days after sale."
+  }
+
+  measure: days_over_120 {
+    type: count
+    filters: [days_to_ship: ">120"]
+    description: "Catalog sales line items shipped more than 120 days after sale."
   }
 }

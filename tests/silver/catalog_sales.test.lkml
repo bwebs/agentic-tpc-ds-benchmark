@@ -317,3 +317,37 @@ test: catalog_sales_2002_married_501_1000_promo_inventory_metrics {
     expression: ${catalog_sales.count} = 1349 ;;
   }
 }
+
+test: catalog_sales_month_seq_1200_1211_ship_aging_joins {
+  explore_source: catalog_sales {
+    column: w_warehouse_name_20 { field: warehouse.w_warehouse_name_20 }
+    column: sm_type { field: ship_mode.sm_type }
+    column: cc_name { field: call_center.cc_name }
+    column: days_30 { field: catalog_sales.days_30 }
+    column: days_31_60 { field: catalog_sales.days_31_60 }
+    column: days_61_90 { field: catalog_sales.days_61_90 }
+    column: days_91_120 { field: catalog_sales.days_91_120 }
+    column: days_over_120 { field: catalog_sales.days_over_120 }
+    filters: {
+      field: ship_date_dim.d_month_seq
+      value: "[1200, 1211]"
+    }
+    filters: {
+      field: warehouse.w_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: ship_mode.sm_ship_mode_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: call_center.cc_call_center_sk
+      value: "NOT NULL"
+    }
+    sorts: [warehouse.w_warehouse_name_20: asc, ship_mode.sm_type: asc, call_center.cc_name: asc]
+    limit: 5
+  }
+  assert: first_row_ship_aging_matches {
+    expression: index(${ship_mode.sm_type}, 1) = "EXPRESS" AND index(${call_center.cc_name}, 1) = "Mid Atlantic" AND index(${catalog_sales.days_30}, 1) = 1223 AND index(${catalog_sales.days_31_60}, 1) = 1314 AND index(${catalog_sales.days_61_90}, 1) = 1257 AND index(${catalog_sales.days_91_120}, 1) = 0 AND index(${catalog_sales.days_over_120}, 1) = 0 ;;
+  }
+}
