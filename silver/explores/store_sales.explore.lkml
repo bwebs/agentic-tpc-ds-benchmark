@@ -75,6 +75,18 @@ explore: store_sales {
     sql_on: ${store_sales.ss_store_sk} = ${store.s_store_sk} ;;
   }
 
+  query: quantity_bucket_conditional_averages {
+    description: "Conditional average extended list price vs net profit across five store sales quantity buckets (1-20, 21-40, 41-60, 61-80, 81-100)"
+    measures: [
+      store_sales.bucket1,
+      store_sales.bucket2,
+      store_sales.bucket3,
+      store_sales.bucket4,
+      store_sales.bucket5
+    ]
+    limit: 500
+  }
+
   query: promotional_item_averages_1998_demographic_cohort {
     description: "1998 average quantity, list price, coupon amount, and sales price by item ID for widowed female 2-yr degree customers on non-email or non-event promotions"
     dimensions: [item.i_item_id]
