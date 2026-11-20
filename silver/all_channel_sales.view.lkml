@@ -9,10 +9,11 @@ view: all_channel_sales {
   derived_table: {
     sql:
       SELECT
-        's' AS sale_type,
+        IF({{ _sdt_store_sales.ss_item_sk._sql }} IS NOT NULL, 's', 's') AS sale_type,
         {{ _sdt_store_sales.ss_item_sk._sql }} AS item_sk,
         {{ _sdt_store_sales.ss_ticket_number._sql }} AS order_number,
         {{ _sdt_store_sales.ss_customer_sk._sql }} AS customer_sk,
+        {{ _sdt_store_sales.ss_addr_sk._sql }} AS addr_sk,
         {{ _sdt_store_sales.ss_sold_date_sk._sql }} AS sold_date_sk,
         {{ _sdt_store_sales.ss_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_store_sales.ss_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
@@ -21,10 +22,11 @@ view: all_channel_sales {
       FROM ${store_sales.SQL_TABLE_NAME} AS {{ _sdt_store_sales._name }}
       UNION ALL
       SELECT
-        'c' AS sale_type,
+        IF({{ _sdt_catalog_sales.cs_item_sk._sql }} IS NOT NULL, 'c', 'c') AS sale_type,
         {{ _sdt_catalog_sales.cs_item_sk._sql }} AS item_sk,
         {{ _sdt_catalog_sales.cs_order_number._sql }} AS order_number,
         {{ _sdt_catalog_sales.cs_bill_customer_sk._sql }} AS customer_sk,
+        {{ _sdt_catalog_sales.cs_bill_addr_sk._sql }} AS addr_sk,
         {{ _sdt_catalog_sales.cs_sold_date_sk._sql }} AS sold_date_sk,
         {{ _sdt_catalog_sales.cs_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_catalog_sales.cs_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
@@ -33,10 +35,11 @@ view: all_channel_sales {
       FROM ${catalog_sales.SQL_TABLE_NAME} AS {{ _sdt_catalog_sales._name }}
       UNION ALL
       SELECT
-        'w' AS sale_type,
+        IF({{ _sdt_web_sales.ws_item_sk._sql }} IS NOT NULL, 'w', 'w') AS sale_type,
         {{ _sdt_web_sales.ws_item_sk._sql }} AS item_sk,
         {{ _sdt_web_sales.ws_order_number._sql }} AS order_number,
         {{ _sdt_web_sales.ws_bill_customer_sk._sql }} AS customer_sk,
+        {{ _sdt_web_sales.ws_bill_addr_sk._sql }} AS addr_sk,
         {{ _sdt_web_sales.ws_sold_date_sk._sql }} AS sold_date_sk,
         {{ _sdt_web_sales.ws_ext_list_price._sql }} AS ext_list_price,
         {{ _sdt_web_sales.ws_ext_wholesale_cost._sql }} AS ext_wholesale_cost,
@@ -76,6 +79,14 @@ view: all_channel_sales {
     value_format_name: id
     tags: ["foreign_key"]
     sql: ${TABLE}.customer_sk ;;
+  }
+
+  dimension: addr_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    description: "Transaction or billing customer address surrogate key (ss_addr_sk, cs_bill_addr_sk, ws_bill_addr_sk)."
+    sql: ${TABLE}.addr_sk ;;
   }
 
   dimension: sold_date_sk {
@@ -151,6 +162,7 @@ view: all_channel_sales {
     type: sum
     sql: ${ext_sales_price} ;;
     value_format_name: usd
+    synonyms: ["total_sales"]
     description: "Sum of extended sales price across store, catalog, and web channels."
   }
 

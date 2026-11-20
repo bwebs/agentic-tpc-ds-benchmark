@@ -2,8 +2,12 @@ include: "/silver/all_channel_sales.view.lkml"
 include: "/silver/all_channel_sales_customer_date_dim_fields.view.lkml"
 include: "/bronze/customer.view.lkml"
 include: "/bronze/customer.refinement.lkml"
+include: "/bronze/customer_address.view.lkml"
+include: "/bronze/customer_address.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
+include: "/bronze/item.view.lkml"
+include: "/bronze/item.refinement.lkml"
 include: "/bronze/store_sales.view.lkml"
 include: "/bronze/store_sales.refinement.lkml"
 include: "/bronze/catalog_sales.view.lkml"
@@ -22,10 +26,22 @@ explore: all_channel_sales {
     sql_on: ${all_channel_sales.customer_sk} = ${customer.c_customer_sk} ;;
   }
 
+  join: customer_address {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${all_channel_sales.addr_sk} = ${customer_address.ca_address_sk} ;;
+  }
+
   join: date_dim {
     type: left_outer
     relationship: many_to_one
     sql_on: ${all_channel_sales.sold_date_sk} = ${date_dim.d_date_sk} ;;
+  }
+
+  join: item {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${all_channel_sales.item_sk} = ${item.i_item_sk} ;;
   }
 
   join: all_channel_sales_customer_date_dim_fields {
