@@ -172,4 +172,11 @@ view: all_channel_sales {
     value_format_name: usd
     description: "Sum of (ext_list_price - ext_discount_amt) across store, catalog, and web channels."
   }
+
+  measure: distinct_channel_count {
+    type: count_distinct
+    sql: ${sale_type} ;;
+    tags: ["non_additive"]
+    description: "Count of distinct sales channels ('s' store, 'c' catalog, 'w' web) with activity."
+  }
 }
