@@ -158,3 +158,40 @@ test: web_sales_2001_web_returns_reason_demographics_joins {
     expression: index(${reason.r_reason_desc_20}, 1) = "Did not fit" AND round(index(${web_sales.average_quantity}, 1), 2) = 51.76 AND round(index(${web_returns.average_refunded_cash}, 1), 2) = 667.13 AND round(index(${web_returns.average_fee}, 1), 2) = 50.72 AND index(${web_sales.count}, 1) = 385 ;;
   }
 }
+
+test: web_sales_q90_2000_am_pm_sales_ratio_metrics {
+  explore_source: web_sales {
+    column: hour_12_13_sales_count { field: time_dim_web_sales_fields.hour_12_13_sales_count }
+    column: hour_20_21_sales_count { field: time_dim_web_sales_fields.hour_20_21_sales_count }
+    column: am_pm_sales_ratio { field: time_dim_web_sales_fields.am_pm_sales_ratio }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: ship_household_demographics.hd_dep_count
+      value: "8"
+    }
+    filters: {
+      field: web_page.wp_char_count
+      value: "[5000, 5200]"
+    }
+    filters: {
+      field: time_dim.t_hour
+      value: "[12, 13], [20, 21]"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: hour_12_13_sales_count_matches {
+    expression: ${time_dim_web_sales_fields.hour_12_13_sales_count} = 56 ;;
+  }
+  assert: hour_20_21_sales_count_matches {
+    expression: ${time_dim_web_sales_fields.hour_20_21_sales_count} = 63 ;;
+  }
+  assert: am_pm_sales_ratio_matches {
+    expression: round(${time_dim_web_sales_fields.am_pm_sales_ratio}, 4) = 0.8889 ;;
+  }
+}
