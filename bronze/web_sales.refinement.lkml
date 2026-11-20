@@ -22,11 +22,45 @@ view: +web_sales {
     sql: ${TABLE}.ws_sold_date_sk ;;
   }
 
+  dimension: ws_ship_date_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_ship_date_sk ;;
+  }
+
   dimension: ws_bill_customer_sk {
     type: number
     value_format_name: id
     tags: ["foreign_key"]
     sql: ${TABLE}.ws_bill_customer_sk ;;
+  }
+
+  dimension: ws_warehouse_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_warehouse_sk ;;
+  }
+
+  dimension: ws_ship_mode_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_ship_mode_sk ;;
+  }
+
+  dimension: ws_web_site_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_web_site_sk ;;
+  }
+
+  dimension: days_to_ship {
+    type: number
+    sql: ${ws_ship_date_sk} - ${ws_sold_date_sk} ;;
+    description: "Days elapsed between sold date surrogate key and ship date surrogate key."
   }
 
   measure: count {
@@ -46,5 +80,35 @@ view: +web_sales {
     value_format_name: usd
     synonyms: ["itemrevenue"]
     description: "Sum of extended web sales price (ws_ext_sales_price)."
+  }
+
+  measure: days_30 {
+    type: count
+    filters: [days_to_ship: "<=30"]
+    description: "Web sales line items shipped within 30 days of sale."
+  }
+
+  measure: days_31_60 {
+    type: count
+    filters: [days_to_ship: "(30, 60]"]
+    description: "Web sales line items shipped 31 to 60 days after sale."
+  }
+
+  measure: days_61_90 {
+    type: count
+    filters: [days_to_ship: "(60, 90]"]
+    description: "Web sales line items shipped 61 to 90 days after sale."
+  }
+
+  measure: days_91_120 {
+    type: count
+    filters: [days_to_ship: "(90, 120]"]
+    description: "Web sales line items shipped 91 to 120 days after sale."
+  }
+
+  measure: days_over_120 {
+    type: count
+    filters: [days_to_ship: ">120"]
+    description: "Web sales line items shipped more than 120 days after sale."
   }
 }
