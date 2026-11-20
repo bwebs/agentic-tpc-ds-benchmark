@@ -71,6 +71,13 @@ view: +catalog_sales {
     sql: ${TABLE}.cs_order_number ;;
   }
 
+  dimension: cs_promo_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cs_promo_sk ;;
+  }
+
   measure: count {
     description: "Count of catalog sales records."
   }
