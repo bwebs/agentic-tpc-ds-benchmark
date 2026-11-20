@@ -117,3 +117,25 @@ test: web_sales_q92_date_sk_2452363_ext_discount_metrics {
     expression: ${web_sales.count} = 226 ;;
   }
 }
+
+test: web_sales_order_le_100_q94_metrics {
+  explore_source: web_sales {
+    column: order_count { field: web_sales.order_count }
+    column: distinct_warehouse_count { field: web_sales.distinct_warehouse_count }
+    column: total_shipping_cost { field: web_sales.total_shipping_cost }
+    column: total_net_profit { field: web_sales.total_net_profit }
+    filters: [web_sales.ws_order_number: "<=100"]
+  }
+  assert: order_count_matches {
+    expression: ${web_sales.order_count} = 100 ;;
+  }
+  assert: distinct_warehouse_count_matches {
+    expression: ${web_sales.distinct_warehouse_count} = 5 ;;
+  }
+  assert: total_shipping_cost_matches {
+    expression: round(${web_sales.total_shipping_cost}, 2) = 1458547.43 ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${web_sales.total_net_profit}, 2) = -263638.45 ;;
+  }
+}
