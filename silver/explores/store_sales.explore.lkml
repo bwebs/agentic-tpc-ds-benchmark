@@ -109,6 +109,24 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: category_class_gross_margin_2000_tn {
+    description: "2000 store sales gross margin by item category and item class for Tennessee stores"
+    dimensions: [item.i_category, item.i_class]
+    measures: [store_sales.gross_margin]
+    filters: [
+      date_dim.d_year_num: "2000",
+      store.s_state: "TN",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL"
+    ]
+    sorts: [item.i_category: asc]
+    limit: 100
+  }
+
   query: williamson_county_ticket_counts_1999_2001_high_dep_ratio {
     description: "Customer details and line-item counts (15 to 20) per store sales ticket in Williamson County across 1999-2001 on days 1-3 or 25-28 for households with >10000 or unknown buy potential and dependent-to-vehicle ratio > 1.2"
     dimensions: [

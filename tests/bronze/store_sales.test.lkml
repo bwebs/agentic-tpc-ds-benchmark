@@ -242,3 +242,25 @@ test: store_sales_jan_1999_quantity_price_buckets {
     expression: ${store_sales.b6_cntd} = 295 ;;
   }
 }
+
+test: store_sales_date_2451545_gross_margin {
+  explore_source: store_sales {
+    column: gross_margin { field: store_sales.gross_margin }
+    column: total_net_profit { field: store_sales.total_net_profit }
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451545"
+    }
+  }
+  assert: gross_margin_matches {
+    expression: round(${store_sales.gross_margin}, 4) = -0.4001 ;;
+  }
+  assert: gross_margin_ratio_identity {
+    expression: round(${store_sales.gross_margin} * ${store_sales.total_ext_sales_price}, 2) = round(${store_sales.total_net_profit}, 2) ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 2743 ;;
+  }
+}
