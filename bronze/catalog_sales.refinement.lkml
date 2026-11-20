@@ -15,6 +15,13 @@ view: +catalog_sales {
     sql: ${TABLE}.cs_sold_date_sk ;;
   }
 
+  dimension: cs_item_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cs_item_sk ;;
+  }
+
   measure: total_ext_sales_price {
     type: sum
     sql: ${cs_ext_sales_price} ;;

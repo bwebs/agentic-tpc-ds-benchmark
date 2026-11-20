@@ -19,6 +19,20 @@ view: +item {
     synonyms: ["brand_id"]
   }
 
+  dimension: i_class_id {
+    type: number
+    value_format_name: id
+    sql: ${TABLE}.i_class_id ;;
+    synonyms: ["class_id"]
+  }
+
+  dimension: i_category_id {
+    type: number
+    value_format_name: id
+    sql: ${TABLE}.i_category_id ;;
+    synonyms: ["category_id"]
+  }
+
   dimension: i_brand {
     type: string
     sql: ${TABLE}.i_brand ;;
