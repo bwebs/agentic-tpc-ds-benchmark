@@ -22,8 +22,22 @@ view: +web_sales {
     sql: ${TABLE}.ws_sold_date_sk ;;
   }
 
+  dimension: ws_bill_customer_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_bill_customer_sk ;;
+  }
+
   measure: count {
     description: "Count of web sales line items."
+  }
+
+  measure: total_sales_price {
+    type: sum
+    sql: ${ws_sales_price} ;;
+    value_format_name: usd
+    description: "Sum of web sales unit sales price (ws_sales_price)."
   }
 
   measure: total_ext_sales_price {
