@@ -76,6 +76,14 @@ view: +store_sales {
     description: "Average extended sales price per store sales line item (AVG(ss_ext_sales_price))."
   }
 
+  measure: total_ext_sales_price {
+    type: sum
+    sql: ${ss_ext_sales_price} ;;
+    value_format_name: usd
+    description: "Sum of extended sales price across store sales line items (SUM(ss_ext_sales_price))."
+    synonyms: ["ext_price", "extended sales price"]
+  }
+
   measure: average_ext_wholesale_cost {
     type: average
     sql: ${ss_ext_wholesale_cost} ;;

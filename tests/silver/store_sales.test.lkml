@@ -265,3 +265,72 @@ test: store_sales_2001_demographic_address_profit_tier_metrics {
     expression: ${store_sales.count} = 9 ;;
   }
 }
+
+test: store_sales_dec_1998_out_of_zip_manager_38_metrics {
+  explore_source: store_sales {
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: count { field: store_sales.count }
+    filters: {
+      field: item.i_manager_id
+      value: "38"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "12"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "1998"
+    }
+    filters: {
+      field: customer_address_store_fields.is_different_zip_5
+      value: "Yes"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_current_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${store_sales.total_ext_sales_price}, 2) = 1583499.98 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 740 ;;
+  }
+}
