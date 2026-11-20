@@ -148,4 +148,19 @@ view: +web_sales {
     synonyms: ["total_sum"]
     description: "Sum of web sales net paid amount (SUM(ws_net_paid))."
   }
+
+  measure: total_ext_discount_amt {
+    type: sum
+    sql: ${ws_ext_discount_amt} ;;
+    value_format_name: usd
+    description: "Sum of extended web sales discount amount (ws_ext_discount_amt)."
+  }
+
+  measure: average_ext_discount_amt {
+    type: average
+    sql: ${ws_ext_discount_amt} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Average extended web sales discount amount per web sales line item (AVG(ws_ext_discount_amt))."
+  }
 }

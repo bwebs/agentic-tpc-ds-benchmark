@@ -96,3 +96,24 @@ test: web_sales_date_sk_2451911_net_paid_metrics {
     expression: ${web_sales.count} = 970 ;;
   }
 }
+
+test: web_sales_q92_date_sk_2452363_ext_discount_metrics {
+  explore_source: web_sales {
+    column: total_ext_discount_amt { field: web_sales.total_ext_discount_amt }
+    column: average_ext_discount_amt { field: web_sales.average_ext_discount_amt }
+    column: count { field: web_sales.count }
+    filters: {
+      field: web_sales.ws_sold_date_sk
+      value: "2452363"
+    }
+  }
+  assert: total_ext_discount_amt_matches {
+    expression: round(${web_sales.total_ext_discount_amt}, 2) = 564162.92 ;;
+  }
+  assert: average_ext_discount_amt_matches {
+    expression: round(${web_sales.average_ext_discount_amt}, 2) = 2496.3 ;;
+  }
+  assert: count_matches {
+    expression: ${web_sales.count} = 226 ;;
+  }
+}
