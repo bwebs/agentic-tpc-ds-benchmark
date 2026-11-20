@@ -578,4 +578,24 @@ explore: store_sales {
     ]
     limit: 100
   }
+
+  query: dec_1998_brand_sales_manager_33 {
+    description: "December 1998 store sales extended sales price by brand for manager 33 items"
+    dimensions: [item.i_brand_id, item.i_brand]
+    measures: [store_sales.total_ext_sales_price]
+    filters: [
+      item.i_manager_id: "33",
+      date_dim.d_moy: "12",
+      date_dim.d_year_num: "1998",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      store_sales.total_ext_sales_price: desc,
+      item.i_brand_id: asc
+    ]
+    limit: 100
+  }
 }
