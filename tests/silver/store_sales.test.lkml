@@ -334,3 +334,80 @@ test: store_sales_dec_1998_out_of_zip_manager_38_metrics {
     expression: ${store_sales.count} = 740 ;;
   }
 }
+
+test: store_sales_2000_tn_male_divorced_college_averages {
+  explore_source: store_sales {
+    column: count { field: store_sales.count }
+    column: average_quantity { field: store_sales.average_quantity }
+    column: average_list_price { field: store_sales.average_list_price }
+    column: average_coupon_amount { field: store_sales.average_coupon_amount }
+    column: average_sales_price { field: store_sales.average_sales_price }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: customer_demographics.cd_gender
+      value: "M"
+    }
+    filters: {
+      field: customer_demographics.cd_marital_status
+      value: "D"
+    }
+    filters: {
+      field: customer_demographics.cd_education_status
+      value: "College"
+    }
+    filters: {
+      field: store.s_state
+      value: "TN"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_cdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_demographics.cd_demo_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 7806 ;;
+  }
+  assert: average_quantity_matches {
+    expression: round(${store_sales.average_quantity}, 2) = 50.55 ;;
+  }
+  assert: average_list_price_matches {
+    expression: round(${store_sales.average_list_price}, 2) = 75.73 ;;
+  }
+  assert: average_coupon_amount_matches {
+    expression: round(${store_sales.average_coupon_amount}, 2) = 186.13 ;;
+  }
+  assert: average_sales_price_matches {
+    expression: round(${store_sales.average_sales_price}, 2) = 38.01 ;;
+  }
+}
