@@ -11,6 +11,10 @@ include: "/bronze/customer_demographics.view.lkml"
 include: "/bronze/customer_demographics.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
+include: "/bronze/household_demographics.view.lkml"
+include: "/bronze/household_demographics.refinement.lkml"
+include: "/bronze/inventory.view.lkml"
+include: "/bronze/inventory.refinement.lkml"
 include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
 include: "/bronze/promotion.view.lkml"
@@ -21,6 +25,7 @@ include: "/silver/catalog_order_return_facts.view.lkml"
 include: "/silver/catalog_order_warehouse_facts.view.lkml"
 include: "/silver/catalog_returns_catalog_sales_date_dim_fields.view.lkml"
 include: "/silver/catalog_sales_customer_address_fields.view.lkml"
+include: "/silver/catalog_sales_promotion_fields.view.lkml"
 
 explore: catalog_sales {
   extends: [catalog_sales_base]
@@ -129,6 +134,66 @@ explore: catalog_sales {
   join: catalog_returns_catalog_sales_date_dim_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: inventory {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_item_sk} = ${inventory.inv_item_sk}
+      AND ${catalog_sales.cs_sold_date_sk} = ${inventory.inv_date_sk}
+      AND ${catalog_sales.cs_warehouse_sk} = ${inventory.inv_warehouse_sk} ;;
+  }
+
+  join: household_demographics {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_bill_hdemo_sk} = ${household_demographics.hd_demo_sk} ;;
+  }
+
+  join: catalog_sales_promotion_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: promo_vs_no_promo_weekly_catalog_sales_2002 {
+    description: "2002 weekly catalog sales promo vs. non-promo line counts by item description and warehouse name for married bill demographics with 501-1000 buy potential"
+    dimensions: [
+      item.i_item_desc,
+      warehouse.w_warehouse_name,
+      date_dim.d_week_seq
+    ]
+    measures: [
+      catalog_sales_promotion_fields.no_promo_count,
+      catalog_sales_promotion_fields.promo_count,
+      catalog_sales.count
+    ]
+    filters: [
+      date_dim.d_year_num: "2002",
+      cd1.cd_marital_status: "M",
+      household_demographics.hd_buy_potential: "501-1000",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      catalog_sales.cs_warehouse_sk: "NOT NULL",
+      catalog_sales.cs_bill_cdemo_sk: "NOT NULL",
+      catalog_sales.cs_bill_hdemo_sk: "NOT NULL",
+      catalog_sales.cs_quantity: "NOT NULL",
+      inventory.inv_item_sk: "NOT NULL",
+      inventory.inv_date_sk: "NOT NULL",
+      inventory.inv_warehouse_sk: "NOT NULL",
+      inventory.inv_quantity_on_hand: "NOT NULL",
+      cd1.cd_demo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      warehouse.w_warehouse_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      catalog_sales.count: desc,
+      item.i_item_desc: asc,
+      warehouse.w_warehouse_name: asc,
+      date_dim.d_week_seq: asc
+    ]
+    limit: 100
   }
 
   query: net_sales_before_and_after_2002_06_01_by_warehouse_state_and_item {

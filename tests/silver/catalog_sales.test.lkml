@@ -232,3 +232,88 @@ test: catalog_sales_may_jul_2002_net_sales_cutoff_metrics {
     expression: ${catalog_sales.count} = 1782 ;;
   }
 }
+
+test: catalog_sales_2002_married_501_1000_promo_inventory_metrics {
+  explore_source: catalog_sales {
+    column: no_promo_count { field: catalog_sales_promotion_fields.no_promo_count }
+    column: promo_count { field: catalog_sales_promotion_fields.promo_count }
+    column: total_quantity_on_hand { field: inventory.total_quantity_on_hand }
+    column: count { field: catalog_sales.count }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2002"
+    }
+    filters: {
+      field: cd1.cd_marital_status
+      value: "M"
+    }
+    filters: {
+      field: household_demographics.hd_buy_potential
+      value: "501-1000"
+    }
+    filters: {
+      field: catalog_sales.cs_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_bill_cdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_bill_hdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: inventory.inv_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: inventory.inv_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: inventory.inv_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: cd1.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: household_demographics.hd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: warehouse.w_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: no_promo_count_matches {
+    expression: ${catalog_sales_promotion_fields.no_promo_count} = 0 ;;
+  }
+  assert: promo_count_matches {
+    expression: ${catalog_sales_promotion_fields.promo_count} = 1349 ;;
+  }
+  assert: total_quantity_on_hand_matches {
+    expression: ${inventory.total_quantity_on_hand} = 651380 ;;
+  }
+  assert: count_matches {
+    expression: ${catalog_sales.count} = 1349 ;;
+  }
+}
