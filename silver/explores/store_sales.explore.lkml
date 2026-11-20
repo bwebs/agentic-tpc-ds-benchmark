@@ -3,10 +3,14 @@ include: "/bronze/customer.view.lkml"
 include: "/bronze/customer.refinement.lkml"
 include: "/bronze/customer_address.view.lkml"
 include: "/bronze/customer_address.refinement.lkml"
+include: "/bronze/customer_demographics.view.lkml"
+include: "/bronze/customer_demographics.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
 include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
+include: "/bronze/promotion.view.lkml"
+include: "/bronze/promotion.refinement.lkml"
 include: "/silver/item_category_price_facts.view.lkml"
 include: "/silver/item_item_category_price_facts_fields.view.lkml"
 
@@ -49,6 +53,46 @@ explore: store_sales {
   join: item_item_category_price_facts_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: customer_demographics {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_sales.ss_cdemo_sk} = ${customer_demographics.cd_demo_sk} ;;
+  }
+
+  join: promotion {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_sales.ss_promo_sk} = ${promotion.p_promo_sk} ;;
+  }
+
+  query: promotional_item_averages_1998_demographic_cohort {
+    description: "1998 average quantity, list price, coupon amount, and sales price by item ID for widowed female 2-yr degree customers on non-email or non-event promotions"
+    dimensions: [item.i_item_id]
+    measures: [
+      store_sales.average_quantity,
+      store_sales.average_list_price,
+      store_sales.average_coupon_amount,
+      store_sales.average_sales_price
+    ]
+    filters: [
+      date_dim.d_year_num: "1998",
+      customer_demographics.cd_gender: "F",
+      customer_demographics.cd_marital_status: "W",
+      customer_demographics.cd_education_status: "2 yr Degree",
+      promotion.is_non_email_or_non_event_channel: "Yes",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      store_sales.ss_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL",
+      store_sales.ss_promo_sk: "NOT NULL",
+      promotion.p_promo_sk: "NOT NULL"
+    ]
+    sorts: [item.i_item_id: asc]
+    limit: 100
   }
 
   query: july_1998_high_price_item_sales_by_state {
