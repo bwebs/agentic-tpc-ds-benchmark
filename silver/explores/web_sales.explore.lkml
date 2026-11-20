@@ -27,6 +27,8 @@ include: "/bronze/household_demographics.view.lkml"
 include: "/bronze/household_demographics.refinement.lkml"
 include: "/silver/prime_sk_item_ids.view.lkml"
 include: "/silver/time_dim_web_sales_fields.view.lkml"
+include: "/silver/web_order_return_facts.view.lkml"
+include: "/silver/web_order_warehouse_facts.view.lkml"
 
 explore: web_sales {
   extends: [web_sales_base]
@@ -149,6 +151,45 @@ explore: web_sales {
   join: time_dim_web_sales_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: ship_customer_address {
+    from: customer_address
+    view_label: "Ship Customer Address"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_ship_addr_sk} = ${ship_customer_address.ca_address_sk} ;;
+  }
+
+  join: web_order_warehouse_facts {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_order_number} = ${web_order_warehouse_facts.ws_order_number} ;;
+  }
+
+  join: web_order_return_facts {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_order_number} = ${web_order_return_facts.wr_order_number} ;;
+  }
+
+  query: multi_warehouse_unreturned_orders_2000 {
+    description: "Multi-warehouse web orders without returns shipped between 2000-03-01 and 2000-05-01 to MT via pri company web sites."
+    measures: [
+      web_sales.order_count,
+      web_sales.total_shipping_cost,
+      web_sales.total_net_profit
+    ]
+    filters: [
+      ship_date.d_date: "2000-03-01 to 2000-05-02",
+      ship_customer_address.ca_state: "MT",
+      web_site.web_company_name: "pri",
+      web_sales.ws_warehouse_sk: "NOT NULL",
+      web_order_warehouse_facts.is_multi_warehouse_order: "Yes",
+      web_order_return_facts.wr_order_number: "NULL"
+    ]
+    sorts: [web_sales.order_count: asc]
+    limit: 100
   }
 
   query: am_pm_sales_ratio_dep_8_char_5000_5200 {

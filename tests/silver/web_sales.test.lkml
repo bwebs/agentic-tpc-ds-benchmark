@@ -195,3 +195,28 @@ test: web_sales_q90_2000_am_pm_sales_ratio_metrics {
     expression: round(${time_dim_web_sales_fields.am_pm_sales_ratio}, 4) = 0.8889 ;;
   }
 }
+
+test: web_sales_multi_warehouse_unreturned_2000_metrics {
+  explore_source: web_sales {
+    column: order_count { field: web_sales.order_count }
+    column: total_shipping_cost { field: web_sales.total_shipping_cost }
+    column: total_net_profit { field: web_sales.total_net_profit }
+    filters: [
+      ship_date.d_date: "2000-03-01 to 2000-05-02",
+      ship_customer_address.ca_state: "MT",
+      web_site.web_company_name: "pri",
+      web_sales.ws_warehouse_sk: "NOT NULL",
+      web_order_warehouse_facts.is_multi_warehouse_order: "Yes",
+      web_order_return_facts.wr_order_number: "NULL"
+    ]
+  }
+  assert: order_count_matches {
+    expression: ${web_sales.order_count} = 11 ;;
+  }
+  assert: total_shipping_cost_matches {
+    expression: round(${web_sales.total_shipping_cost}, 2) = 13376.14 ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${web_sales.total_net_profit}, 2) = 13217.63 ;;
+  }
+}

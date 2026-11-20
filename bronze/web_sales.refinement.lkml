@@ -78,6 +78,20 @@ view: +web_sales {
     sql: ${TABLE}.ws_ship_hdemo_sk ;;
   }
 
+  dimension: ws_ship_addr_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_ship_addr_sk ;;
+  }
+
+  dimension: ws_order_number {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_order_number ;;
+  }
+
   dimension: days_to_ship {
     type: number
     sql: ${ws_ship_date_sk} - ${ws_sold_date_sk} ;;
@@ -86,6 +100,35 @@ view: +web_sales {
 
   measure: count {
     description: "Count of web sales line items."
+  }
+
+  measure: order_count {
+    type: count_distinct
+    sql: ${ws_order_number} ;;
+    tags: ["non_additive"]
+    description: "Distinct count of web order numbers (ws_order_number)."
+  }
+
+  measure: distinct_warehouse_count {
+    type: count_distinct
+    sql: ${ws_warehouse_sk} ;;
+    tags: ["non_additive"]
+    description: "Distinct count of fulfillment warehouses (ws_warehouse_sk)."
+  }
+
+  measure: total_shipping_cost {
+    type: sum
+    sql: ${ws_ext_ship_cost} ;;
+    value_format_name: usd
+    synonyms: ["total_ext_ship_cost"]
+    description: "Sum of extended web shipping cost (ws_ext_ship_cost)."
+  }
+
+  measure: total_net_profit {
+    type: sum
+    sql: ${ws_net_profit} ;;
+    value_format_name: usd
+    description: "Sum of web sales net profit (ws_net_profit)."
   }
 
   measure: total_sales_price {
