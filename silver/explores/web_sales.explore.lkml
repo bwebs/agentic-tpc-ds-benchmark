@@ -173,6 +173,24 @@ explore: web_sales {
     sql_on: ${web_sales.ws_order_number} = ${web_order_return_facts.wr_order_number} ;;
   }
 
+  query: multi_warehouse_returned_orders_2000 {
+    description: "Multi-warehouse web orders with returns shipped between 2000-04-01 and 2000-06-01 to IN via pri company web sites."
+    measures: [
+      web_sales.order_count,
+      web_sales.total_shipping_cost,
+      web_sales.total_net_profit
+    ]
+    filters: [
+      ship_date.d_date: "2000-04-01 to 2000-06-02",
+      ship_customer_address.ca_state: "IN",
+      web_site.web_company_name: "pri",
+      web_order_warehouse_facts.is_multi_warehouse_order: "Yes",
+      web_order_return_facts.wr_order_number: "NOT NULL"
+    ]
+    sorts: [web_sales.order_count: asc]
+    limit: 100
+  }
+
   query: multi_warehouse_unreturned_orders_2000 {
     description: "Multi-warehouse web orders without returns shipped between 2000-03-01 and 2000-05-01 to MT via pri company web sites."
     measures: [
