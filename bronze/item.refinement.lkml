@@ -59,6 +59,18 @@ view: +item {
       OR (${i_category} = 'Men' AND ${i_color} IN ('chocolate', 'antique') AND ${i_units} IN ('Dram', 'Gram') AND ${i_size} IN ('economy', 'petite')) ;;
   }
 
+  dimension: is_q53_featured_brand_cohort {
+    type: yesno
+    label: "Featured Brand Cohort (Q53)"
+    description: "Whether the item belongs to one of the two featured category, class, and brand cohorts (Books/Children/Electronics or Women/Music/Men)."
+    sql: (${i_category} IN ('Books', 'Children', 'Electronics')
+        AND ${i_class} IN ('personal', 'portable', 'reference', 'self-help')
+        AND ${i_brand} IN ('scholaramalgamalg #14', 'scholaramalgamalg #7', 'exportiunivamalg #9', 'scholaramalgamalg #9'))
+      OR (${i_category} IN ('Women', 'Music', 'Men')
+        AND ${i_class} IN ('accessories', 'classical', 'fragrances', 'pants')
+        AND ${i_brand} IN ('amalgimporto #1', 'edu packscholar #1', 'exportiimporto #1', 'importoamalg #1')) ;;
+  }
+
   measure: count {
     description: "Count of items."
   }

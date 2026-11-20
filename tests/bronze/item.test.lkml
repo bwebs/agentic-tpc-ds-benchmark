@@ -34,3 +34,22 @@ test: item_apparel_spec_slice_metrics {
     expression: index(${item.is_apparel_spec_match}, 2) = yes AND index(${item.count}, 2) = 2 ;;
   }
 }
+
+
+test: item_q53_featured_brand_cohort_slice_metrics {
+  explore_source: item {
+    column: is_q53_featured_brand_cohort { field: item.is_q53_featured_brand_cohort }
+    column: item_count { field: item.count }
+    filters: {
+      field: item.i_item_sk
+      value: "<=5000"
+    }
+    sorts: [item.is_q53_featured_brand_cohort: asc]
+  }
+  assert: non_matching_cohort_count_matches {
+    expression: index(${item.is_q53_featured_brand_cohort}, 1) = no AND index(${item.count}, 1) = 4748 ;;
+  }
+  assert: matching_cohort_count_matches {
+    expression: index(${item.is_q53_featured_brand_cohort}, 2) = yes AND index(${item.count}, 2) = 252 ;;
+  }
+}
