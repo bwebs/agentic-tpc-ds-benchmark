@@ -411,3 +411,44 @@ test: store_sales_2000_tn_male_divorced_college_averages {
     expression: round(${store_sales.average_sales_price}, 2) = 38.01 ;;
   }
 }
+
+test: store_sales_dec_2000_manager_1_join_metrics {
+  explore_source: store_sales {
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: count { field: store_sales.count }
+    filters: {
+      field: item.i_manager_id
+      value: "1"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "12"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${store_sales.total_ext_sales_price}, 2) = 2942395.13 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 1579 ;;
+  }
+}

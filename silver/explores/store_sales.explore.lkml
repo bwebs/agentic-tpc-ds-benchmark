@@ -109,6 +109,32 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: dec_2000_category_ext_sales_manager_1 {
+    description: "December 2000 store sales extended sales price by year and item category for manager 1 items"
+    dimensions: [
+      date_dim.d_year_num,
+      item.i_category_id,
+      item.i_category
+    ]
+    measures: [store_sales.total_ext_sales_price]
+    filters: [
+      item.i_manager_id: "1",
+      date_dim.d_moy: "12",
+      date_dim.d_year_num: "2000",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL"
+    ]
+    sorts: [
+      store_sales.total_ext_sales_price: desc,
+      date_dim.d_year_num: asc,
+      item.i_category_id: asc,
+      item.i_category: asc
+    ]
+    limit: 100
+  }
+
   query: category_class_gross_margin_2000_tn {
     description: "2000 store sales gross margin by item category and item class for Tennessee stores"
     dimensions: [item.i_category, item.i_class]
