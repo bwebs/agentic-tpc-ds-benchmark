@@ -64,6 +64,20 @@ view: +web_sales {
     sql: ${TABLE}.ws_web_page_sk ;;
   }
 
+  dimension: ws_sold_time_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_sold_time_sk ;;
+  }
+
+  dimension: ws_ship_hdemo_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ws_ship_hdemo_sk ;;
+  }
+
   dimension: days_to_ship {
     type: number
     sql: ${ws_ship_date_sk} - ${ws_sold_date_sk} ;;

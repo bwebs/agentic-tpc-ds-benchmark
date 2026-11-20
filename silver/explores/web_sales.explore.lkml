@@ -21,7 +21,12 @@ include: "/bronze/customer_demographics.view.lkml"
 include: "/bronze/customer_demographics.refinement.lkml"
 include: "/bronze/reason.view.lkml"
 include: "/bronze/reason.refinement.lkml"
+include: "/bronze/time_dim.view.lkml"
+include: "/bronze/time_dim.refinement.lkml"
+include: "/bronze/household_demographics.view.lkml"
+include: "/bronze/household_demographics.refinement.lkml"
 include: "/silver/prime_sk_item_ids.view.lkml"
+include: "/silver/time_dim_web_sales_fields.view.lkml"
 
 explore: web_sales {
   extends: [web_sales_base]
@@ -125,6 +130,37 @@ explore: web_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${web_returns.wr_reason_sk} = ${reason.r_reason_sk} ;;
+  }
+
+  join: time_dim {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_sold_time_sk} = ${time_dim.t_time_sk} ;;
+  }
+
+  join: ship_household_demographics {
+    from: household_demographics
+    view_label: "Ship Household Demographics"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${web_sales.ws_ship_hdemo_sk} = ${ship_household_demographics.hd_demo_sk} ;;
+  }
+
+  join: time_dim_web_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: am_pm_sales_ratio_dep_8_char_5000_5200 {
+    description: "Ratio of web sales count in hours 12-13 to hours 20-21 for ship household dependent count 8 and web page character count 5000..5200."
+    measures: [time_dim_web_sales_fields.am_pm_sales_ratio]
+    filters: [
+      ship_household_demographics.hd_dep_count: "8",
+      web_page.wp_char_count: "[5000, 5200]",
+      time_dim.t_hour: "[12, 13], [20, 21]"
+    ]
+    sorts: [time_dim_web_sales_fields.am_pm_sales_ratio: asc]
+    limit: 100
   }
 
   query: net_paid_by_category_and_class_month_seq_1183_1194 {
