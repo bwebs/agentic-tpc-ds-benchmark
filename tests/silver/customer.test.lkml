@@ -173,3 +173,24 @@ test: customer_2001_q1_q3_multichannel_tx_demographics_metrics {
     expression: ${customer.count} = ${customer_2001_q1_q3_channel_flags.count} ;;
   }
 }
+
+test: customer_ks_az_ne_2004_mar_may_channel_flags_slice {
+  explore_source: customer {
+    column: customer_count { field: customer.count }
+    column: active_2004_mar_may_customers { field: customer_2004_mar_may_channel_flags.count }
+    filters: {
+      field: customer_address.ca_state
+      value: "KS,AZ,NE"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "<=10000"
+    }
+  }
+  assert: ks_az_ne_customer_count_matches {
+    expression: ${customer.count} = 676 ;;
+  }
+  assert: mar_may_2004_active_bounded_by_cohort {
+    expression: ${customer_2004_mar_may_channel_flags.count} = 0 AND ${customer_2004_mar_may_channel_flags.count} <= ${customer.count} ;;
+  }
+}

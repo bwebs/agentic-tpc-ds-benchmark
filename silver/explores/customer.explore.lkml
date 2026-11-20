@@ -2,6 +2,7 @@ include: "/bronze/explores/customer_base.explore.lkml"
 include: "/silver/customer_channel_yoy_facts.view.lkml"
 include: "/silver/customer_2002_apr_jul_channel_flags.view.lkml"
 include: "/silver/customer_2001_q1_q3_channel_flags.view.lkml"
+include: "/silver/customer_2004_mar_may_channel_flags.view.lkml"
 include: "/bronze/store_sales.view.lkml"
 include: "/bronze/store_sales.refinement.lkml"
 include: "/bronze/catalog_sales.view.lkml"
@@ -57,6 +58,12 @@ explore: customer {
     sql_on: ${customer.c_customer_sk} = ${customer_2001_q1_q3_channel_flags.customer_sk} ;;
   }
 
+  join: customer_2004_mar_may_channel_flags {
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${customer.c_customer_sk} = ${customer_2004_mar_may_channel_flags.customer_sk} ;;
+  }
+
   join: _sdt_store_sales {
     from: store_sales
     sql: ;;
@@ -83,6 +90,32 @@ explore: customer {
     sql: ;;
     relationship: one_to_one
     fields: []
+  }
+
+  query: store_only_2004_mar_may_demographics_ks_az_ne {
+    description: "2004 Mar-May store-only active customers in KS, AZ, and NE by demographic profile"
+    dimensions: [
+      customer_demographics.cd_gender,
+      customer_demographics.cd_marital_status,
+      customer_demographics.cd_education_status,
+      customer_demographics.cd_purchase_estimate,
+      customer_demographics.cd_credit_rating
+    ]
+    measures: [customer.count]
+    filters: [
+      customer_address.ca_state: "KS,AZ,NE",
+      customer.c_current_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL",
+      customer_2004_mar_may_channel_flags.is_store_only_mar_may_2004: "Yes"
+    ]
+    sorts: [
+      customer_demographics.cd_gender: asc,
+      customer_demographics.cd_marital_status: asc,
+      customer_demographics.cd_education_status: asc,
+      customer_demographics.cd_purchase_estimate: asc,
+      customer_demographics.cd_credit_rating: asc
+    ]
+    limit: 100
   }
 
   query: state_demographics_by_2001_q1_q3_multichannel_activity {
