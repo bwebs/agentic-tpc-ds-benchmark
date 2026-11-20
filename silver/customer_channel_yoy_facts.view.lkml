@@ -62,30 +62,44 @@ view: customer_channel_yoy_facts {
     sql: ${TABLE}.web_2002_year_total ;;
   }
 
-  dimension: has_positive_2001_all_channels {
-    type: yesno
-    label: "Has Positive 2001 Spend in All Channels"
-    description: "Yes when 2001 year_total is strictly positive across store, catalog, and web channels."
-    sql: ${store_2001_year_total} > 0
-      AND ${catalog_2001_year_total} > 0
-      AND ${web_2001_year_total} > 0 ;;
+  dimension: _has_store_2002 {
+    hidden: yes
+    type: number
+    sql: IF(${store_2002_year_total} IS NOT NULL, 1, 0) ;;
   }
 
-  dimension: is_catalog_yoy_outpacing_store_and_web {
-    type: yesno
-    label: "Catalog YoY Growth Outpaces Store and Web"
-    description: "Yes when 2001 spend is positive in all three channels and 2002/2001 catalog year_total ratio exceeds both store and web 2002/2001 ratios."
-    sql: ${store_2001_year_total} > 0
-      AND ${catalog_2001_year_total} > 0
-      AND ${web_2001_year_total} > 0
-      AND CASE WHEN ${catalog_2001_year_total} > 0 THEN ${catalog_2002_year_total} / ${catalog_2001_year_total} ELSE NULL END
-        > CASE WHEN ${store_2001_year_total} > 0 THEN ${store_2002_year_total} / ${store_2001_year_total} ELSE NULL END
-      AND CASE WHEN ${catalog_2001_year_total} > 0 THEN ${catalog_2002_year_total} / ${catalog_2001_year_total} ELSE NULL END
-        > CASE WHEN ${web_2001_year_total} > 0 THEN ${web_2002_year_total} / ${web_2001_year_total} ELSE NULL END ;;
+  dimension: _has_catalog_2002 {
+    hidden: yes
+    type: number
+    sql: IF(${catalog_2002_year_total} IS NOT NULL, 1, 0) ;;
+  }
+
+  dimension: _has_web_2002 {
+    hidden: yes
+    type: number
+    sql: IF(${web_2002_year_total} IS NOT NULL, 1, 0) ;;
   }
 
   measure: count {
     type: count
+  }
+
+  measure: _store_2002_count {
+    hidden: yes
+    type: sum
+    sql: ${_has_store_2002} ;;
+  }
+
+  measure: _catalog_2002_count {
+    hidden: yes
+    type: sum
+    sql: ${_has_catalog_2002} ;;
+  }
+
+  measure: _web_2002_count {
+    hidden: yes
+    type: sum
+    sql: ${_has_web_2002} ;;
   }
 
   measure: total_store_2001_year_total {
@@ -126,22 +140,34 @@ view: customer_channel_yoy_facts {
 
   measure: store_yoy_ratio {
     type: number
-    sql: 1.0 * ${total_store_2002_year_total} / NULLIF(${total_store_2001_year_total}, 0) ;;
+    sql: IF(${_store_2002_count} > 0 AND ${total_store_2001_year_total} > 0, 1.0 * ${total_store_2002_year_total} / NULLIF(${total_store_2001_year_total}, 0), NULL) ;;
     value_format_name: decimal_4
     tags: ["non_additive"]
   }
 
   measure: catalog_yoy_ratio {
     type: number
-    sql: 1.0 * ${total_catalog_2002_year_total} / NULLIF(${total_catalog_2001_year_total}, 0) ;;
+    sql: IF(${_catalog_2002_count} > 0 AND ${total_catalog_2001_year_total} > 0, 1.0 * ${total_catalog_2002_year_total} / NULLIF(${total_catalog_2001_year_total}, 0), NULL) ;;
     value_format_name: decimal_4
     tags: ["non_additive"]
   }
 
   measure: web_yoy_ratio {
     type: number
-    sql: 1.0 * ${total_web_2002_year_total} / NULLIF(${total_web_2001_year_total}, 0) ;;
+    sql: IF(${_web_2002_count} > 0 AND ${total_web_2001_year_total} > 0, 1.0 * ${total_web_2002_year_total} / NULLIF(${total_web_2001_year_total}, 0), NULL) ;;
     value_format_name: decimal_4
     tags: ["non_additive"]
+  }
+
+  measure: is_catalog_yoy_outpacing_store_and_web {
+    type: yesno
+    label: "Catalog YoY Growth Outpaces Store and Web"
+    tags: ["non_additive"]
+    description: "Yes when 2001 spend is positive in all three channels and 2002/2001 catalog year_total ratio exceeds both store and web 2002/2001 ratios."
+    sql: ${total_store_2001_year_total} > 0
+      AND ${total_catalog_2001_year_total} > 0
+      AND ${total_web_2001_year_total} > 0
+      AND ${catalog_yoy_ratio} > ${store_yoy_ratio}
+      AND ${catalog_yoy_ratio} > ${web_yoy_ratio} ;;
   }
 }
