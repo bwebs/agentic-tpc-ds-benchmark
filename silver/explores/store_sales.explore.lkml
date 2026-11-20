@@ -13,8 +13,12 @@ include: "/bronze/promotion.view.lkml"
 include: "/bronze/promotion.refinement.lkml"
 include: "/bronze/store.view.lkml"
 include: "/bronze/store.refinement.lkml"
+include: "/bronze/household_demographics.view.lkml"
+include: "/bronze/household_demographics.refinement.lkml"
 include: "/silver/item_category_price_facts.view.lkml"
 include: "/silver/item_item_category_price_facts_fields.view.lkml"
+include: "/silver/customer_demographics_household_demographics_store_sales_fields.view.lkml"
+include: "/silver/sales_customer_address_store_sales_fields.view.lkml"
 
 explore: store_sales {
   extends: [store_sales_base]
@@ -73,6 +77,56 @@ explore: store_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${store_sales.ss_store_sk} = ${store.s_store_sk} ;;
+  }
+
+  join: household_demographics {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_sales.ss_hdemo_sk} = ${household_demographics.hd_demo_sk} ;;
+  }
+
+  join: sales_customer_address {
+    from: customer_address
+    view_label: "Sales Customer Address"
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_sales.ss_addr_sk} = ${sales_customer_address.ca_address_sk} ;;
+  }
+
+  join: customer_demographics_household_demographics_store_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  join: sales_customer_address_store_sales_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: store_sales_2001_demographic_address_profit_summary {
+    description: "2001 average quantity, extended sales price, and extended wholesale cost (average and sum) across qualifying demographic sales price and US state net profit tiers"
+    measures: [
+      store_sales.average_quantity,
+      store_sales.average_ext_sales_price,
+      store_sales.average_ext_wholesale_cost,
+      store_sales.total_ext_wholesale_cost
+    ]
+    filters: [
+      date_dim.d_year_num: "2001",
+      customer_demographics_household_demographics_store_sales_fields.is_qualifying_demographic_sales_price_tier: "Yes",
+      sales_customer_address_store_sales_fields.is_qualifying_us_state_net_profit_tier: "Yes",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_hdemo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      store_sales.ss_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL",
+      store_sales.ss_addr_sk: "NOT NULL",
+      sales_customer_address.ca_address_sk: "NOT NULL"
+    ]
+    limit: 500
   }
 
   query: quantity_bucket_conditional_averages {
