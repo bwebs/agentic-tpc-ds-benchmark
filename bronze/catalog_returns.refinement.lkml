@@ -21,4 +21,15 @@ view: +catalog_returns {
     tags: ["foreign_key"]
     sql: ${TABLE}.cr_returned_date_sk ;;
   }
+
+  dimension: cr_order_number {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cr_order_number ;;
+  }
+
+  measure: count {
+    description: "Count of catalog return records."
+  }
 }
