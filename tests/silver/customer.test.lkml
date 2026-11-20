@@ -127,3 +127,49 @@ test: customer_web_yoy_list_net_2001_2002_cohort_metrics {
     expression: ${customer_channel_yoy_facts.web_list_net_yoy_ratio} > ${customer_channel_yoy_facts.store_list_net_yoy_ratio} ;;
   }
 }
+
+test: customer_2001_q1_q3_multichannel_tx_demographics_metrics {
+  explore_source: customer {
+    column: cd_gender { field: customer_demographics.cd_gender }
+    column: count { field: customer.count }
+    column: channel_flag_count { field: customer_2001_q1_q3_channel_flags.count }
+    filters: {
+      field: customer_address.ca_state
+      value: "TX"
+    }
+    filters: {
+      field: customer.c_current_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_current_cdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_demographics.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_2001_q1_q3_channel_flags.has_store_sales
+      value: "Yes"
+    }
+    filters: {
+      field: customer_2001_q1_q3_channel_flags.has_web_or_catalog_ship_sales
+      value: "Yes"
+    }
+    sorts: [customer_demographics.cd_gender: asc]
+  }
+  assert: tx_female_and_male_counts_match {
+    expression: index(${customer_demographics.cd_gender}, 1) = "F"
+      AND index(${customer.count}, 1) = 230
+      AND index(${customer_demographics.cd_gender}, 2) = "M"
+      AND index(${customer.count}, 2) = 188 ;;
+  }
+  assert: one_to_one_channel_flag_count_matches {
+    expression: ${customer.count} = ${customer_2001_q1_q3_channel_flags.count} ;;
+  }
+}
