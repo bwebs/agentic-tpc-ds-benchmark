@@ -33,3 +33,24 @@ test: customer_channel_yoy_2001_2002_cohort_metrics {
     expression: ${customer_channel_yoy_facts.catalog_yoy_ratio} > 1 ;;
   }
 }
+
+test: customer_zip_prefix_31_preferred_address_metrics {
+  explore_source: customer {
+    column: preferred_customer_count { field: customer.preferred_customer_count }
+    column: count { field: customer.count }
+    filters: {
+      field: customer_customer_address_fields.has_current_address_match
+      value: "Yes"
+    }
+    filters: {
+      field: customer_address.ca_zip_prefix_2
+      value: "31"
+    }
+  }
+  assert: preferred_customer_count_matches {
+    expression: ${customer.preferred_customer_count} = 561 ;;
+  }
+  assert: customer_count_matches {
+    expression: ${customer.count} = 1193 ;;
+  }
+}

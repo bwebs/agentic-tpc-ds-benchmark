@@ -147,3 +147,44 @@ test: store_sales_1998_cdemo_promo_channel_averages {
     expression: ${store_sales.count} = 3 ;;
   }
 }
+
+test: store_sales_q2_2000_store_join_net_profit_metrics {
+  explore_source: store_sales {
+    column: total_net_profit { field: store_sales.total_net_profit }
+    column: count { field: store_sales.count }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2000"
+    }
+    filters: {
+      field: date_dim.d_qoy
+      value: "2"
+    }
+    filters: {
+      field: store.s_store_name
+      value: "able"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_net_profit_matches {
+    expression: round(${store_sales.total_net_profit}, 2) = -10355108.96 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 12700 ;;
+  }
+}

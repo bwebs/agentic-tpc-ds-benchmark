@@ -11,6 +11,8 @@ include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
 include: "/bronze/promotion.view.lkml"
 include: "/bronze/promotion.refinement.lkml"
+include: "/bronze/store.view.lkml"
+include: "/bronze/store.refinement.lkml"
 include: "/silver/item_category_price_facts.view.lkml"
 include: "/silver/item_item_category_price_facts_fields.view.lkml"
 
@@ -65,6 +67,12 @@ explore: store_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${store_sales.ss_promo_sk} = ${promotion.p_promo_sk} ;;
+  }
+
+  join: store {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${store_sales.ss_store_sk} = ${store.s_store_sk} ;;
   }
 
   query: promotional_item_averages_1998_demographic_cohort {

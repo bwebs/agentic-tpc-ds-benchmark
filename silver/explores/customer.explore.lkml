@@ -8,12 +8,26 @@ include: "/bronze/web_sales.view.lkml"
 include: "/bronze/web_sales.refinement.lkml"
 include: "/bronze/date_dim.view.lkml"
 include: "/bronze/date_dim.refinement.lkml"
+include: "/bronze/customer_address.view.lkml"
+include: "/bronze/customer_address.refinement.lkml"
+include: "/silver/customer_customer_address_fields.view.lkml"
 
 explore: customer {
   extends: [customer_base]
   hidden: no
   label: "Customer"
   view_name: customer
+
+  join: customer_address {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${customer.c_current_addr_sk} = ${customer_address.ca_address_sk} ;;
+  }
+
+  join: customer_customer_address_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
 
   join: customer_channel_yoy_facts {
     type: left_outer
