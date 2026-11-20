@@ -52,3 +52,44 @@ test: inventory_apr_jun_2000_price_band_join_metrics {
     expression: round(${date_dim_inventory_fields.inv_after_to_before_ratio}, 4) = 0.7995 ;;
   }
 }
+
+test: inventory_month_seq_1205_1216_join_metrics {
+  explore_source: inventory {
+    column: count { field: inventory.count }
+    column: average_quantity_on_hand { field: inventory.average_quantity_on_hand }
+    filters: {
+      field: date_dim.d_month_seq
+      value: "[1205, 1216]"
+    }
+    filters: {
+      field: inventory.inv_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: inventory.inv_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: inventory.inv_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: warehouse.w_warehouse_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: inventory_join_count_matches {
+    expression: ${inventory.count} = 2385000 ;;
+  }
+  assert: average_quantity_on_hand_matches {
+    expression: round(${inventory.average_quantity_on_hand}, 2) = 500.27 ;;
+  }
+}

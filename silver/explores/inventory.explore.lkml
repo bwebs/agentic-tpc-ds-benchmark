@@ -63,4 +63,34 @@ explore: inventory {
     ]
     limit: 100
   }
+
+  query: average_qoh_by_item_hierarchy_month_seq_1205_1216 {
+    description: "Average quantity on hand by item product name, brand, class, and category for month sequence 1205 through 1216"
+    dimensions: [
+      item.i_product_name,
+      item.i_brand,
+      item.i_class,
+      item.i_category
+    ]
+    measures: [
+      inventory.average_quantity_on_hand
+    ]
+    filters: [
+      date_dim.d_month_seq: "[1205, 1216]",
+      inventory.inv_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      inventory.inv_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      inventory.inv_warehouse_sk: "NOT NULL",
+      warehouse.w_warehouse_sk: "NOT NULL"
+    ]
+    sorts: [
+      inventory.average_quantity_on_hand: asc,
+      item.i_product_name: asc,
+      item.i_brand: asc,
+      item.i_class: asc,
+      item.i_category: asc
+    ]
+    limit: 100
+  }
 }
