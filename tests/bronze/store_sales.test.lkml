@@ -119,3 +119,28 @@ test: store_sales_jan_1999_quantity_buckets {
     expression: round(${store_sales.bucket5}, 2) = -1467.16 ;;
   }
 }
+
+test: store_sales_date_2451911_ext_sales_wholesale_metrics {
+  explore_source: store_sales {
+    column: average_ext_sales_price { field: store_sales.average_ext_sales_price }
+    column: average_ext_wholesale_cost { field: store_sales.average_ext_wholesale_cost }
+    column: total_ext_wholesale_cost { field: store_sales.total_ext_wholesale_cost }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451911"
+    }
+  }
+  assert: average_ext_sales_price_matches {
+    expression: round(${store_sales.average_ext_sales_price}, 2) = 1892.35 ;;
+  }
+  assert: average_ext_wholesale_cost_matches {
+    expression: round(${store_sales.average_ext_wholesale_cost}, 2) = 2551.61 ;;
+  }
+  assert: total_ext_wholesale_cost_matches {
+    expression: round(${store_sales.total_ext_wholesale_cost}, 2) = 7797723.96 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 3142 ;;
+  }
+}

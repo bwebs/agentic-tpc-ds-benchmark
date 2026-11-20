@@ -50,8 +50,45 @@ view: +store_sales {
     sql: ${TABLE}.ss_store_sk ;;
   }
 
+  dimension: ss_hdemo_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ss_hdemo_sk ;;
+  }
+
+  dimension: ss_addr_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ss_addr_sk ;;
+  }
+
   measure: count {
     description: "Count of store sales line items."
+  }
+
+  measure: average_ext_sales_price {
+    type: average
+    sql: ${ss_ext_sales_price} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Average extended sales price per store sales line item (AVG(ss_ext_sales_price))."
+  }
+
+  measure: average_ext_wholesale_cost {
+    type: average
+    sql: ${ss_ext_wholesale_cost} ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Average extended wholesale cost per store sales line item (AVG(ss_ext_wholesale_cost))."
+  }
+
+  measure: total_ext_wholesale_cost {
+    type: sum
+    sql: ${ss_ext_wholesale_cost} ;;
+    value_format_name: usd
+    description: "Sum of extended wholesale cost across store sales line items (SUM(ss_ext_wholesale_cost))."
   }
 
   measure: total_net_profit {

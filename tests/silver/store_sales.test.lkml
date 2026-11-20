@@ -188,3 +188,80 @@ test: store_sales_q2_2000_store_join_net_profit_metrics {
     expression: ${store_sales.count} = 12700 ;;
   }
 }
+
+test: store_sales_2001_demographic_address_profit_tier_metrics {
+  explore_source: store_sales {
+    column: average_quantity { field: store_sales.average_quantity }
+    column: average_ext_sales_price { field: store_sales.average_ext_sales_price }
+    column: average_ext_wholesale_cost { field: store_sales.average_ext_wholesale_cost }
+    column: total_ext_wholesale_cost { field: store_sales.total_ext_wholesale_cost }
+    column: count { field: store_sales.count }
+    filters: {
+      field: date_dim.d_year_num
+      value: "2001"
+    }
+    filters: {
+      field: customer_demographics_household_demographics_store_sales_fields.is_qualifying_demographic_sales_price_tier
+      value: "Yes"
+    }
+    filters: {
+      field: sales_customer_address_store_sales_fields.is_qualifying_us_state_net_profit_tier
+      value: "Yes"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_hdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: household_demographics.hd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_cdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_demographics.cd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: sales_customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: average_quantity_matches {
+    expression: round(${store_sales.average_quantity}, 2) = 19.22 ;;
+  }
+  assert: average_ext_sales_price_matches {
+    expression: round(${store_sales.average_ext_sales_price}, 2) = 1329.69 ;;
+  }
+  assert: average_ext_wholesale_cost_matches {
+    expression: round(${store_sales.average_ext_wholesale_cost}, 2) = 1179.58 ;;
+  }
+  assert: total_ext_wholesale_cost_matches {
+    expression: round(${store_sales.total_ext_wholesale_cost}, 2) = 10616.24 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 9 ;;
+  }
+}
