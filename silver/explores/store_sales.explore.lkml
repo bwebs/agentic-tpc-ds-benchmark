@@ -145,6 +145,41 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: williamson_county_ticket_counts_2000_2002_dep_over_vehicle {
+    description: "Customer details and line-item counts (1 to 5) per store sales ticket in Williamson County across 2000-2002 on days 1-2 for households with >10000 or 0-500 buy potential and dependent-to-vehicle ratio > 1"
+    dimensions: [
+      customer.c_last_name,
+      customer.c_first_name,
+      customer.c_salutation,
+      customer.c_preferred_cust_flag,
+      store_sales.ss_ticket_number,
+      store_sales.ss_customer_sk
+    ]
+    measures: [store_sales.count]
+    filters: [
+      date_dim.d_dom: "[1, 2]",
+      date_dim.d_year_num: "2000, 2001, 2002",
+      store.s_county: "Williamson County",
+      household_demographics.hd_buy_potential: ">10000,0-500",
+      household_demographics.hd_vehicle_count: ">0",
+      household_demographics.is_dep_to_vehicle_ratio_over_1: "Yes",
+      store_sales.count: "[1, 5]",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_hdemo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      store_sales.ss_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL"
+    ]
+    sorts: [
+      store_sales.count: desc,
+      customer.c_last_name: asc
+    ]
+    limit: 5000
+  }
+
   query: early_month_out_of_city_ticket_sales_1998_2000 {
     description: "1998-2000 days 1-2 of month store sales extended price, extended tax, and list price by customer, current city, sales city, and ticket in Fairview and Midway"
     dimensions: [
