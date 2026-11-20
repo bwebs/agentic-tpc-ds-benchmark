@@ -787,3 +787,84 @@ test: store_sales_dec_2001_books_promotional_sales_metrics {
     expression: ${store_sales.count} = 961 ;;
   }
 }
+
+test: store_sales_1998_dom_1_2_fairview_midway_address_join_metrics {
+  explore_source: store_sales {
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: total_ext_tax { field: store_sales.total_ext_tax }
+    column: total_ext_list_price { field: store_sales.total_ext_list_price }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store.s_city
+      value: "Fairview,Midway"
+    }
+    filters: {
+      field: date_dim.d_dom
+      value: "[1, 2]"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "1998"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store.s_store_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_hdemo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: household_demographics.hd_demo_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: sales_customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_customer_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer.c_current_addr_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: customer_address.ca_address_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${store_sales.total_ext_sales_price}, 2) = 56969221.39 ;;
+  }
+  assert: total_ext_tax_matches {
+    expression: round(${store_sales.total_ext_tax}, 2) = 2301226.99 ;;
+  }
+  assert: total_ext_list_price_matches {
+    expression: round(${store_sales.total_ext_list_price}, 2) = 113580573.22 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 29599 ;;
+  }
+}

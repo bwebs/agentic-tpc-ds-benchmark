@@ -113,6 +113,22 @@ view: +store_sales {
     synonyms: ["ext_price", "extended sales price"]
   }
 
+  measure: total_ext_list_price {
+    type: sum
+    sql: ${ss_ext_list_price} ;;
+    value_format_name: usd
+    description: "Sum of extended list price across store sales line items (SUM(ss_ext_list_price))."
+    synonyms: ["list_price", "extended list price"]
+  }
+
+  measure: total_ext_tax {
+    type: sum
+    sql: ${ss_ext_tax} ;;
+    value_format_name: usd
+    description: "Sum of extended tax amount across store sales line items (SUM(ss_ext_tax))."
+    synonyms: ["extended_tax", "extended tax"]
+  }
+
   measure: average_ext_wholesale_cost {
     type: average
     sql: ${ss_ext_wholesale_cost} ;;
