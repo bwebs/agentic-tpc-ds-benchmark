@@ -115,6 +115,29 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: store_sales_1999_demographic_state_quantity {
+    description: "1999 total store sales quantity across US state, customer demographic, sales price, and net profit cohorts"
+    measures: [store_sales.total_quantity]
+    filters: [
+      date_dim.d_year_num: "1999",
+      sales_customer_address.ca_country: "United States",
+      sales_customer_address.ca_state: "TX, NE, MO, CO, TN, ND, OK, PA, CA",
+      customer_demographics.cd_marital_status: "W, M, D",
+      customer_demographics.cd_education_status: "Secondary, Advanced Degree, 2 yr Degree",
+      store_sales.ss_sales_price: "[50, 200]",
+      store_sales.ss_net_profit: "[0, 25000]",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL",
+      store_sales.ss_addr_sk: "NOT NULL",
+      sales_customer_address.ca_address_sk: "NOT NULL"
+    ]
+    limit: 500
+  }
+
   query: weekend_out_of_city_ticket_sales_2000_2002 {
     description: "2000-2002 weekend store sales coupon amount and net profit by customer, current city, sales city, and ticket in Midway and Fairview"
     dimensions: [
