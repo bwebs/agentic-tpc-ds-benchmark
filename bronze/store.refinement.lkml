@@ -12,6 +12,13 @@ view: +store {
     sql: ${TABLE}.s_store_sk ;;
   }
 
+  dimension: s_zip_5 {
+    type: string
+    label: "Store Zip Code (5-Digit)"
+    description: "First 5 characters of store postal code (SUBSTR(s_zip, 1, 5))."
+    sql: SUBSTR(${s_zip}, 1, 5) ;;
+  }
+
   dimension: s_zip_prefix_2 {
     type: string
     label: "Store Zip Prefix (2-Digit)"

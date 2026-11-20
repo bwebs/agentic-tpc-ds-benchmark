@@ -19,6 +19,7 @@ include: "/silver/item_category_price_facts.view.lkml"
 include: "/silver/item_item_category_price_facts_fields.view.lkml"
 include: "/silver/customer_demographics_household_demographics_store_sales_fields.view.lkml"
 include: "/silver/sales_customer_address_store_sales_fields.view.lkml"
+include: "/silver/customer_address_store_fields.view.lkml"
 
 explore: store_sales {
   extends: [store_sales_base]
@@ -101,6 +102,46 @@ explore: store_sales {
   join: sales_customer_address_store_sales_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: customer_address_store_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: dec_1998_out_of_zip_brand_manufact_sales_manager_38 {
+    description: "December 1998 extended sales price by brand and manufacturer for manager 38 items where customer 5-digit zip differs from store 5-digit zip"
+    dimensions: [
+      item.i_brand_id,
+      item.i_brand,
+      item.i_manufact_id,
+      item.i_manufact
+    ]
+    measures: [store_sales.total_ext_sales_price]
+    filters: [
+      item.i_manager_id: "38",
+      date_dim.d_moy: "12",
+      date_dim.d_year_num: "1998",
+      customer_address_store_fields.is_different_zip_5: "Yes",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      store_sales.ss_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL"
+    ]
+    sorts: [
+      store_sales.total_ext_sales_price: desc,
+      item.i_brand: asc,
+      item.i_brand_id: asc,
+      item.i_manufact_id: asc,
+      item.i_manufact: asc
+    ]
+    limit: 100
   }
 
   query: store_sales_2001_demographic_address_profit_summary {
