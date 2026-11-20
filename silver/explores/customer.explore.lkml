@@ -121,4 +121,25 @@ explore: customer {
     sorts: [customer.c_customer_id: asc]
     limit: 100
   }
+
+  query: web_yoy_outpacing_store_list_net_2001_2002 {
+    description: "Customers with positive 2001 list-minus-discount spend in store and web whose 2002/2001 web growth ratio exceeds store"
+    dimensions: [
+      customer.c_customer_id,
+      customer.c_first_name,
+      customer.c_last_name,
+      customer.c_birth_country
+    ]
+    filters: [
+      customer_channel_yoy_facts.is_web_yoy_outpacing_store_list_net_2001_2002: "Yes",
+      customer_channel_yoy_facts.c_customer_id: "-NULL"
+    ]
+    sorts: [
+      customer.c_customer_id: asc,
+      customer.c_first_name: asc,
+      customer.c_last_name: asc,
+      customer.c_birth_country: asc
+    ]
+    limit: 100
+  }
 }

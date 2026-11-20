@@ -122,6 +122,19 @@ view: all_channel_sales {
     sql: IF(${year_net_amount} IS NOT NULL AND ${customer_sk} IS NOT NULL AND ${sold_date_sk} IS NOT NULL, 1, 0) ;;
   }
 
+  dimension: ext_list_minus_discount {
+    type: number
+    value_format_name: usd
+    description: "Extended list price minus extended discount amount (ext_list_price - ext_discount_amt)."
+    sql: ${ext_list_price} - ${ext_discount_amt} ;;
+  }
+
+  dimension: has_dated_ext_list_minus_discount {
+    hidden: yes
+    type: number
+    sql: IF(${ext_list_minus_discount} IS NOT NULL AND ${customer_sk} IS NOT NULL AND ${sold_date_sk} IS NOT NULL, 1, 0) ;;
+  }
+
   measure: count {
     type: count
   }
@@ -139,5 +152,12 @@ view: all_channel_sales {
     sql: ${ext_sales_price} ;;
     value_format_name: usd
     description: "Sum of extended sales price across store, catalog, and web channels."
+  }
+
+  measure: total_ext_list_minus_discount {
+    type: sum
+    sql: ${ext_list_minus_discount} ;;
+    value_format_name: usd
+    description: "Sum of (ext_list_price - ext_discount_amt) across store, catalog, and web channels."
   }
 }

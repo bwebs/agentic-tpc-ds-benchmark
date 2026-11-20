@@ -131,4 +131,84 @@ view: all_channel_sales_customer_date_dim_fields {
     tags: ["non_additive"]
     description: "Web channel year_total in 2002 (NULL when no priced rows exist)."
   }
+
+  measure: _store_2001_list_net_sum {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "s", date_dim.d_year_num: "2001", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: _store_2001_list_net_priced_count {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.has_dated_ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "s", date_dim.d_year_num: "2001", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: store_2001_list_net_total {
+    type: number
+    sql: IF(${_store_2001_list_net_priced_count} > 0, ${_store_2001_list_net_sum}, NULL) ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Store channel (ext_list_price - ext_discount_amt) total in 2001 (NULL when no priced rows exist)."
+  }
+
+  measure: _store_2002_list_net_sum {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "s", date_dim.d_year_num: "2002", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: _store_2002_list_net_priced_count {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.has_dated_ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "s", date_dim.d_year_num: "2002", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: store_2002_list_net_total {
+    type: number
+    sql: IF(${_store_2002_list_net_priced_count} > 0, ${_store_2002_list_net_sum}, NULL) ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Store channel (ext_list_price - ext_discount_amt) total in 2002 (NULL when no priced rows exist)."
+  }
+
+  measure: _web_2001_list_net_sum {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "w", date_dim.d_year_num: "2001", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: _web_2001_list_net_priced_count {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.has_dated_ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "w", date_dim.d_year_num: "2001", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: web_2001_list_net_total {
+    type: number
+    sql: IF(${_web_2001_list_net_priced_count} > 0, ${_web_2001_list_net_sum}, NULL) ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Web channel (ext_list_price - ext_discount_amt) total in 2001 (NULL when no priced rows exist)."
+  }
+
+  measure: _web_2002_list_net_sum {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "w", date_dim.d_year_num: "2002", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: _web_2002_list_net_priced_count {
+    hidden: yes
+    type: sum
+    sql: ${all_channel_sales.has_dated_ext_list_minus_discount} ;;
+    filters: [all_channel_sales.sale_type: "w", date_dim.d_year_num: "2002", date_dim.d_date_sk: "NOT NULL", customer.c_customer_sk: "NOT NULL"]
+  }
+  measure: web_2002_list_net_total {
+    type: number
+    sql: IF(${_web_2002_list_net_priced_count} > 0, ${_web_2002_list_net_sum}, NULL) ;;
+    value_format_name: usd
+    tags: ["non_additive"]
+    description: "Web channel (ext_list_price - ext_discount_amt) total in 2002 (NULL when no priced rows exist)."
+  }
 }
