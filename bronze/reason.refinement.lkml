@@ -16,6 +16,12 @@ view: +reason {
     description: "Business identifier for return reason."
   }
 
+  dimension: r_reason_desc_20 {
+    type: string
+    sql: SUBSTR(${r_reason_desc}, 1, 20) ;;
+    description: "First 20 characters of the return reason description."
+  }
+
   measure: count {
     description: "Count of return reasons."
   }
