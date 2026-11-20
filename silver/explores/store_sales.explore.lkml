@@ -109,6 +109,31 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: quantity_price_bucket_list_price_summary {
+    description: "Average, count, and distinct count of list price across six mutually exclusive store sales quantity and price/coupon/wholesale buckets (B1..B6)"
+    measures: [
+      store_sales.b1_lp,
+      store_sales.b1_cnt,
+      store_sales.b1_cntd,
+      store_sales.b2_lp,
+      store_sales.b2_cnt,
+      store_sales.b2_cntd,
+      store_sales.b3_lp,
+      store_sales.b3_cnt,
+      store_sales.b3_cntd,
+      store_sales.b4_lp,
+      store_sales.b4_cnt,
+      store_sales.b4_cntd,
+      store_sales.b5_lp,
+      store_sales.b5_cnt,
+      store_sales.b5_cntd,
+      store_sales.b6_lp,
+      store_sales.b6_cnt,
+      store_sales.b6_cntd
+    ]
+    limit: 100
+  }
+
   query: item_state_averages_2000_demographic_cohort {
     description: "2000 average quantity, list price, coupon amount, and sales price by item ID and store state for divorced male college-educated customers in TN"
     dimensions: [item.i_item_id, store.s_state]

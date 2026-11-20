@@ -64,6 +64,19 @@ view: +store_sales {
     sql: ${TABLE}.ss_addr_sk ;;
   }
 
+  dimension: quantity_price_bucket {
+    type: string
+    sql: CASE
+      WHEN ${ss_quantity} BETWEEN 0 AND 5 AND (${ss_list_price} BETWEEN 18 AND 28 OR ${ss_coupon_amt} BETWEEN 1939 AND 2939 OR ${ss_wholesale_cost} BETWEEN 34 AND 54) THEN 'B1'
+      WHEN ${ss_quantity} BETWEEN 6 AND 10 AND (${ss_list_price} BETWEEN 1 AND 11 OR ${ss_coupon_amt} BETWEEN 35 AND 1035 OR ${ss_wholesale_cost} BETWEEN 50 AND 70) THEN 'B2'
+      WHEN ${ss_quantity} BETWEEN 11 AND 15 AND (${ss_list_price} BETWEEN 91 AND 101 OR ${ss_coupon_amt} BETWEEN 1412 AND 2412 OR ${ss_wholesale_cost} BETWEEN 17 AND 37) THEN 'B3'
+      WHEN ${ss_quantity} BETWEEN 16 AND 20 AND (${ss_list_price} BETWEEN 9 AND 19 OR ${ss_coupon_amt} BETWEEN 5270 AND 6270 OR ${ss_wholesale_cost} BETWEEN 29 AND 49) THEN 'B4'
+      WHEN ${ss_quantity} BETWEEN 21 AND 25 AND (${ss_list_price} BETWEEN 45 AND 55 OR ${ss_coupon_amt} BETWEEN 826 AND 1826 OR ${ss_wholesale_cost} BETWEEN 5 AND 25) THEN 'B5'
+      WHEN ${ss_quantity} BETWEEN 26 AND 30 AND (${ss_list_price} BETWEEN 174 AND 184 OR ${ss_coupon_amt} BETWEEN 5548 AND 6548 OR ${ss_wholesale_cost} BETWEEN 42 AND 62) THEN 'B6'
+    END ;;
+    description: "Mutually exclusive quantity (0-30 in 5-unit bands) and price/coupon/wholesale qualifying bucket (B1..B6)."
+  }
+
   measure: count {
     description: "Count of store sales line items."
   }
@@ -325,5 +338,161 @@ view: +store_sales {
     tags: ["non_additive"]
     group_label: "Quantity Bucket Metrics"
     description: "Conditional metric for quantity 81-100: average extended list price when count > 23,982, else average net profit."
+  }
+
+  measure: b1_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B1"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B1 (quantity 0-5)."
+  }
+
+  measure: b1_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B1", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B1 (quantity 0-5)."
+  }
+
+  measure: b1_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B1"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B1 (quantity 0-5)."
+  }
+
+  measure: b2_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B2"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B2 (quantity 6-10)."
+  }
+
+  measure: b2_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B2", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B2 (quantity 6-10)."
+  }
+
+  measure: b2_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B2"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B2 (quantity 6-10)."
+  }
+
+  measure: b3_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B3"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B3 (quantity 11-15)."
+  }
+
+  measure: b3_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B3", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B3 (quantity 11-15)."
+  }
+
+  measure: b3_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B3"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B3 (quantity 11-15)."
+  }
+
+  measure: b4_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B4"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B4 (quantity 16-20)."
+  }
+
+  measure: b4_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B4", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B4 (quantity 16-20)."
+  }
+
+  measure: b4_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B4"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B4 (quantity 16-20)."
+  }
+
+  measure: b5_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B5"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B5 (quantity 21-25)."
+  }
+
+  measure: b5_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B5", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B5 (quantity 21-25)."
+  }
+
+  measure: b5_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B5"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B5 (quantity 21-25)."
+  }
+
+  measure: b6_lp {
+    type: average
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B6"]
+    value_format_name: usd
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Average list price for store sales in qualifying bucket B6 (quantity 26-30)."
+  }
+
+  measure: b6_cnt {
+    type: count
+    filters: [quantity_price_bucket: "B6", ss_list_price: "NOT NULL"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Count of store sales with non-null list price in qualifying bucket B6 (quantity 26-30)."
+  }
+
+  measure: b6_cntd {
+    type: count_distinct
+    sql: ${ss_list_price} ;;
+    filters: [quantity_price_bucket: "B6"]
+    tags: ["non_additive"]
+    group_label: "Quantity Price Bucket Metrics"
+    description: "Distinct list price count for store sales in qualifying bucket B6 (quantity 26-30)."
   }
 }
