@@ -183,3 +183,52 @@ test: catalog_sales_2000_promo_demographics_metrics {
     expression: ${catalog_sales.count} = 3990 ;;
   }
 }
+
+test: catalog_sales_may_jul_2002_net_sales_cutoff_metrics {
+  explore_source: catalog_sales {
+    column: sales_before { field: catalog_returns_catalog_sales_date_dim_fields.sales_before }
+    column: sales_after { field: catalog_returns_catalog_sales_date_dim_fields.sales_after }
+    column: count { field: catalog_sales.count }
+    filters: {
+      field: item.i_current_price
+      value: "[0.99, 1.49]"
+    }
+    filters: {
+      field: date_dim.d_date
+      value: "2002-05-01 to 2002-07-02"
+    }
+    filters: {
+      field: catalog_sales.cs_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: warehouse.w_warehouse_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: catalog_sales.cs_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: sales_before_matches {
+    expression: round(${catalog_returns_catalog_sales_date_dim_fields.sales_before}, 2) = 6001.10 ;;
+  }
+  assert: sales_after_matches {
+    expression: round(${catalog_returns_catalog_sales_date_dim_fields.sales_after}, 2) = -34815.07 ;;
+  }
+  assert: row_count_matches {
+    expression: ${catalog_sales.count} = 1782 ;;
+  }
+}

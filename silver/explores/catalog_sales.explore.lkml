@@ -1,6 +1,8 @@
 include: "/bronze/explores/catalog_sales_base.explore.lkml"
 include: "/bronze/call_center.view.lkml"
 include: "/bronze/call_center.refinement.lkml"
+include: "/bronze/catalog_returns.view.lkml"
+include: "/bronze/catalog_returns.refinement.lkml"
 include: "/bronze/customer.view.lkml"
 include: "/bronze/customer.refinement.lkml"
 include: "/bronze/customer_address.view.lkml"
@@ -13,8 +15,11 @@ include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
 include: "/bronze/promotion.view.lkml"
 include: "/bronze/promotion.refinement.lkml"
+include: "/bronze/warehouse.view.lkml"
+include: "/bronze/warehouse.refinement.lkml"
 include: "/silver/catalog_order_return_facts.view.lkml"
 include: "/silver/catalog_order_warehouse_facts.view.lkml"
+include: "/silver/catalog_returns_catalog_sales_date_dim_fields.view.lkml"
 include: "/silver/catalog_sales_customer_address_fields.view.lkml"
 
 explore: catalog_sales {
@@ -106,6 +111,51 @@ explore: catalog_sales {
     type: left_outer
     relationship: many_to_one
     sql_on: ${catalog_sales.cs_promo_sk} = ${promotion.p_promo_sk} ;;
+  }
+
+  join: warehouse {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_warehouse_sk} = ${warehouse.w_warehouse_sk} ;;
+  }
+
+  join: catalog_returns {
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${catalog_sales.cs_order_number} = ${catalog_returns.cr_order_number}
+      AND ${catalog_sales.cs_item_sk} = ${catalog_returns.cr_item_sk} ;;
+  }
+
+  join: catalog_returns_catalog_sales_date_dim_fields {
+    sql: ;;
+    relationship: one_to_one
+  }
+
+  query: net_sales_before_and_after_2002_06_01_by_warehouse_state_and_item {
+    description: "Catalog net sales (sales price minus refunded cash) before vs. on/after 2002-06-01 between 2002-05-01 and 2002-07-01 by warehouse state and item ID for items priced $0.99-$1.49"
+    dimensions: [
+      warehouse.w_state,
+      item.i_item_id
+    ]
+    measures: [
+      catalog_returns_catalog_sales_date_dim_fields.sales_before,
+      catalog_returns_catalog_sales_date_dim_fields.sales_after
+    ]
+    filters: [
+      item.i_current_price: "[0.99, 1.49]",
+      date_dim.d_date: "2002-05-01 to 2002-07-02",
+      catalog_sales.cs_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      catalog_sales.cs_warehouse_sk: "NOT NULL",
+      warehouse.w_warehouse_sk: "NOT NULL",
+      catalog_sales.cs_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL"
+    ]
+    sorts: [
+      warehouse.w_state: asc,
+      item.i_item_id: asc
+    ]
+    limit: 100
   }
 
   query: promotional_item_averages_2000_demographic_cohort {
