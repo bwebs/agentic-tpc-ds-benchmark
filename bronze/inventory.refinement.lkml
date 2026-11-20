@@ -39,4 +39,13 @@ view: +inventory {
     value_format_name: decimal_0
     description: "Total quantity on hand across inventory snapshots (SUM(inv_quantity_on_hand))."
   }
+
+  measure: average_quantity_on_hand {
+    type: average
+    sql: ${inv_quantity_on_hand} ;;
+    value_format_name: decimal_2
+    tags: ["non_additive"]
+    synonyms: ["qoh"]
+    description: "Average quantity on hand across inventory snapshots (AVG(inv_quantity_on_hand))."
+  }
 }
