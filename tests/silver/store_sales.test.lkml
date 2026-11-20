@@ -643,3 +643,45 @@ test: store_sales_sep_2002_return_aging_metrics {
     expression: ${store_returns_store_sales_fields.days_over_120} = 579 ;;
   }
 }
+
+
+test: store_sales_nov_1999_manager_1_brand_sales_metrics {
+  explore_source: store_sales {
+    column: total_ext_sales_price { field: store_sales.total_ext_sales_price }
+    column: count { field: store_sales.count }
+    filters: {
+      field: item.i_manager_id
+      value: "1"
+    }
+    filters: {
+      field: date_dim.d_moy
+      value: "11"
+    }
+    filters: {
+      field: date_dim.d_year_num
+      value: "1999"
+    }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: date_dim.d_date_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: store_sales.ss_item_sk
+      value: "NOT NULL"
+    }
+    filters: {
+      field: item.i_item_sk
+      value: "NOT NULL"
+    }
+  }
+  assert: total_ext_sales_price_matches {
+    expression: round(${store_sales.total_ext_sales_price}, 2) = 2957653.13 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 1491 ;;
+  }
+}
