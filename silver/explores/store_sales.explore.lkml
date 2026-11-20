@@ -109,6 +109,34 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: item_state_averages_2000_demographic_cohort {
+    description: "2000 average quantity, list price, coupon amount, and sales price by item ID and store state for divorced male college-educated customers in TN"
+    dimensions: [item.i_item_id, store.s_state]
+    measures: [
+      store_sales.average_quantity,
+      store_sales.average_list_price,
+      store_sales.average_coupon_amount,
+      store_sales.average_sales_price
+    ]
+    filters: [
+      date_dim.d_year_num: "2000",
+      customer_demographics.cd_gender: "M",
+      customer_demographics.cd_marital_status: "D",
+      customer_demographics.cd_education_status: "College",
+      store.s_state: "TN",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_item_sk: "NOT NULL",
+      item.i_item_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_cdemo_sk: "NOT NULL",
+      customer_demographics.cd_demo_sk: "NOT NULL"
+    ]
+    sorts: [item.i_item_id: asc, store.s_state: asc]
+    limit: 100
+  }
+
   query: dec_1998_out_of_zip_brand_manufact_sales_manager_38 {
     description: "December 1998 extended sales price by brand and manufacturer for manager 38 items where customer 5-digit zip differs from store 5-digit zip"
     dimensions: [
