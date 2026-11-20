@@ -29,7 +29,29 @@ view: +catalog_returns {
     sql: ${TABLE}.cr_order_number ;;
   }
 
+  dimension: cr_returning_customer_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cr_returning_customer_sk ;;
+  }
+
+  dimension: cr_returning_addr_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.cr_returning_addr_sk ;;
+  }
+
   measure: count {
     description: "Count of catalog return records."
+  }
+
+  measure: total_return_amt_inc_tax {
+    type: sum
+    sql: ${cr_return_amt_inc_tax} ;;
+    value_format_name: usd
+    description: "Sum of catalog return amount including tax (cr_return_amt_inc_tax)."
+    synonyms: ["ctr_total_return", "total return including tax"]
   }
 }
