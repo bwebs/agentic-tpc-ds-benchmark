@@ -43,8 +43,23 @@ view: +store_sales {
     sql: ${TABLE}.ss_promo_sk ;;
   }
 
+  dimension: ss_store_sk {
+    type: number
+    value_format_name: id
+    tags: ["foreign_key"]
+    sql: ${TABLE}.ss_store_sk ;;
+  }
+
   measure: count {
     description: "Count of store sales line items."
+  }
+
+  measure: total_net_profit {
+    type: sum
+    sql: ${ss_net_profit} ;;
+    value_format_name: usd
+    description: "Sum of net profit across store sales line items (SUM(ss_net_profit))."
+    synonyms: ["net profit"]
   }
 
   measure: total_extended_discount_amount {

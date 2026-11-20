@@ -45,3 +45,20 @@ test: store_sales_date_2451149_average_pricing_metrics {
     expression: ${store_sales.count} = 2849 ;;
   }
 }
+
+test: store_sales_date_sk_2451666_net_profit_metrics {
+  explore_source: store_sales {
+    column: total_net_profit { field: store_sales.total_net_profit }
+    column: count { field: store_sales.count }
+    filters: {
+      field: store_sales.ss_sold_date_sk
+      value: "2451666"
+    }
+  }
+  assert: total_net_profit_matches {
+    expression: round(${store_sales.total_net_profit}, 2) = -744576.27 ;;
+  }
+  assert: store_sales_count_matches {
+    expression: ${store_sales.count} = 868 ;;
+  }
+}

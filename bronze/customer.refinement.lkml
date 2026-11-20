@@ -20,7 +20,20 @@ view: +customer {
     sql: ${TABLE}.c_current_addr_sk ;;
   }
 
+  dimension: is_preferred_customer {
+    type: yesno
+    label: "Preferred Customer"
+    description: "True when customer preferred flag (c_preferred_cust_flag) is Y."
+    sql: ${c_preferred_cust_flag} = 'Y' ;;
+  }
+
   measure: count {
     description: "Count of customer records."
+  }
+
+  measure: preferred_customer_count {
+    type: count
+    filters: [is_preferred_customer: "Yes"]
+    description: "Count of preferred customer records (c_preferred_cust_flag = Y)."
   }
 }
