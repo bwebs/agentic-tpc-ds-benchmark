@@ -18,6 +18,14 @@ view: +warehouse {
     description: "First 20 characters of the warehouse name."
   }
 
+  measure: max_warehouse_sq_ft {
+    hidden: yes
+    type: max
+    sql: ${w_warehouse_sq_ft} ;;
+    tags: ["non_additive"]
+    description: "Maximum warehouse square footage (used for sales-per-sq-ft ratios at warehouse grain)."
+  }
+
   measure: count {
     description: "Count of warehouses."
   }
