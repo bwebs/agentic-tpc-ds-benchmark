@@ -220,3 +220,28 @@ test: web_sales_multi_warehouse_unreturned_2000_metrics {
     expression: round(${web_sales.total_net_profit}, 2) = 13217.63 ;;
   }
 }
+
+
+test: web_sales_multi_warehouse_returned_2000_metrics {
+  explore_source: web_sales {
+    column: order_count { field: web_sales.order_count }
+    column: total_shipping_cost { field: web_sales.total_shipping_cost }
+    column: total_net_profit { field: web_sales.total_net_profit }
+    filters: [
+      ship_date.d_date: "2000-04-01 to 2000-06-02",
+      ship_customer_address.ca_state: "IN",
+      web_site.web_company_name: "pri",
+      web_order_warehouse_facts.is_multi_warehouse_order: "Yes",
+      web_order_return_facts.wr_order_number: "NOT NULL"
+    ]
+  }
+  assert: order_count_matches {
+    expression: ${web_sales.order_count} = 36 ;;
+  }
+  assert: total_shipping_cost_matches {
+    expression: round(${web_sales.total_shipping_cost}, 2) = 73939.73 ;;
+  }
+  assert: total_net_profit_matches {
+    expression: round(${web_sales.total_net_profit}, 2) = 13305.09 ;;
+  }
+}
