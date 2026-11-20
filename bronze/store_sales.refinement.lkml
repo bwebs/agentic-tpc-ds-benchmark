@@ -120,6 +120,14 @@ view: +store_sales {
     synonyms: ["net profit"]
   }
 
+  measure: total_coupon_amt {
+    type: sum
+    sql: ${ss_coupon_amt} ;;
+    value_format_name: usd
+    description: "Sum of coupon discount amount across store sales line items (SUM(ss_coupon_amt))."
+    synonyms: ["coupon amount", "total coupon amount"]
+  }
+
   measure: gross_margin {
     type: number
     sql: ${total_net_profit} / NULLIF(${total_ext_sales_price}, 0) ;;

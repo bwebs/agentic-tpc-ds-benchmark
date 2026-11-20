@@ -115,6 +115,45 @@ explore: store_sales {
     relationship: one_to_one
   }
 
+  query: weekend_out_of_city_ticket_sales_2000_2002 {
+    description: "2000-2002 weekend store sales coupon amount and net profit by customer, current city, sales city, and ticket in Midway and Fairview"
+    dimensions: [
+      customer.c_last_name,
+      customer.c_first_name,
+      customer_address.ca_city,
+      sales_customer_address.ca_city,
+      store_sales.ss_ticket_number
+    ]
+    measures: [store_sales.total_coupon_amt, store_sales.total_net_profit]
+    filters: [
+      store.s_city: "Midway,Fairview",
+      date_dim.d_dow: "0, 6",
+      date_dim.d_year_num: "2000, 2001, 2002",
+      customer_address.ca_city: "-NULL",
+      sales_customer_address.ca_city: "-NULL",
+      store_sales.ss_sold_date_sk: "NOT NULL",
+      date_dim.d_date_sk: "NOT NULL",
+      store_sales.ss_store_sk: "NOT NULL",
+      store.s_store_sk: "NOT NULL",
+      store_sales.ss_hdemo_sk: "NOT NULL",
+      household_demographics.hd_demo_sk: "NOT NULL",
+      store_sales.ss_addr_sk: "NOT NULL",
+      sales_customer_address.ca_address_sk: "NOT NULL",
+      store_sales.ss_customer_sk: "NOT NULL",
+      customer.c_customer_sk: "NOT NULL",
+      customer.c_current_addr_sk: "NOT NULL",
+      customer_address.ca_address_sk: "NOT NULL"
+    ]
+    sorts: [
+      customer.c_last_name: asc,
+      customer.c_first_name: asc,
+      customer_address.ca_city: asc,
+      sales_customer_address.ca_city: asc,
+      store_sales.ss_ticket_number: asc
+    ]
+    limit: 100
+  }
+
   query: store_day_of_week_sales_2002_gmt_minus_5 {
     description: "2002 store sales price by day of week (Sunday through Saturday) by store name and store ID for GMT -5 stores"
     dimensions: [store.s_store_name, store.s_store_id]
