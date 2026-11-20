@@ -19,6 +19,8 @@ include: "/bronze/item.view.lkml"
 include: "/bronze/item.refinement.lkml"
 include: "/bronze/promotion.view.lkml"
 include: "/bronze/promotion.refinement.lkml"
+include: "/bronze/ship_mode.view.lkml"
+include: "/bronze/ship_mode.refinement.lkml"
 include: "/bronze/warehouse.view.lkml"
 include: "/bronze/warehouse.refinement.lkml"
 include: "/silver/catalog_order_return_facts.view.lkml"
@@ -153,6 +155,40 @@ explore: catalog_sales {
   join: catalog_sales_promotion_fields {
     sql: ;;
     relationship: one_to_one
+  }
+
+  join: ship_mode {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${catalog_sales.cs_ship_mode_sk} = ${ship_mode.sm_ship_mode_sk} ;;
+  }
+
+  query: ship_aging_by_warehouse_ship_mode_and_call_center {
+    description: "Catalog sales shipping aging buckets grouped by 20-char warehouse name, ship mode type, and call center name for ship month seq 1200..1211."
+    dimensions: [
+      warehouse.w_warehouse_name_20,
+      ship_mode.sm_type,
+      call_center.cc_name
+    ]
+    measures: [
+      catalog_sales.days_30,
+      catalog_sales.days_31_60,
+      catalog_sales.days_61_90,
+      catalog_sales.days_91_120,
+      catalog_sales.days_over_120
+    ]
+    filters: [
+      ship_date_dim.d_month_seq: "[1200, 1211]",
+      warehouse.w_warehouse_sk: "NOT NULL",
+      ship_mode.sm_ship_mode_sk: "NOT NULL",
+      call_center.cc_call_center_sk: "NOT NULL"
+    ]
+    sorts: [
+      warehouse.w_warehouse_name_20: asc,
+      ship_mode.sm_type: asc,
+      call_center.cc_name: asc
+    ]
+    limit: 100
   }
 
   query: promo_vs_no_promo_weekly_catalog_sales_2002 {

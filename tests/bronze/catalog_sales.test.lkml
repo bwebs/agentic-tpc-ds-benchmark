@@ -69,3 +69,32 @@ test: catalog_sales_order_le_100_discount_metrics {
     expression: ${catalog_sales.count} = 860 ;;
   }
 }
+
+test: catalog_sales_ship_date_sk_2452000_2452100_aging_metrics {
+  explore_source: catalog_sales {
+    column: days_30 { field: catalog_sales.days_30 }
+    column: days_31_60 { field: catalog_sales.days_31_60 }
+    column: days_61_90 { field: catalog_sales.days_61_90 }
+    column: days_91_120 { field: catalog_sales.days_91_120 }
+    column: days_over_120 { field: catalog_sales.days_over_120 }
+    filters: {
+      field: catalog_sales.cs_ship_date_sk
+      value: "[2452000, 2452100]"
+    }
+  }
+  assert: days_30_matches {
+    expression: ${catalog_sales.days_30} = 14890 ;;
+  }
+  assert: days_31_60_matches {
+    expression: ${catalog_sales.days_31_60} = 15335 ;;
+  }
+  assert: days_61_90_matches {
+    expression: ${catalog_sales.days_61_90} = 15336 ;;
+  }
+  assert: days_91_120_matches {
+    expression: ${catalog_sales.days_91_120} = 0 ;;
+  }
+  assert: days_over_120_matches {
+    expression: ${catalog_sales.days_over_120} = 0 ;;
+  }
+}
